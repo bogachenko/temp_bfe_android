@@ -27,12 +27,6 @@
       <stop offset=".7" stop-color="#7445F1"/>
       <stop offset="1" stop-color="#7837D9"/>
     </radialGradient>
-    <filter id="softShadow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
-      <feOffset dy="10"/>
-      <feColorMatrix values="0 0 0 0 0.35 0 0 0 0 0.31 0 0 0 0 0.42 0 0 0 .22 0"/>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
   </defs>
 
   <rect x="117.5" y="120.5" width="316.5" height="212.14" rx="27" fill="#E7E7E8"/>
@@ -45,9 +39,12 @@
   <path d="M276 332.64h50.33l21.33 39.98c5.61 10.53-2.02 21.88-13.95 21.88H276v-61.86Z" fill="url(#bottomOrange)"/>
   <path d="M42.75 373.24a5.09 5.09 0 0 1 5.09-5.09H276v26.35H64c-11.74 0-21.25-9.52-21.25-21.26Z" fill="url(#beigeBar)"/>
 
-  <g filter="url(#softShadow)"><circle cx="275.46" cy="162.65" r="21.08" fill="url(#ball)"/></g>
-  <g filter="url(#softShadow)"><circle cx="171.15" cy="267.11" r="13.11" fill="url(#ball)"/></g>
-  <g filter="url(#softShadow)"><circle cx="416.9" cy="256.5" r="13.11" fill="url(#ball)"/></g>
+  <ellipse cx="275.46" cy="184" rx="28" ry="18" fill="#8D8394" opacity=".14"/>
+  <circle cx="275.46" cy="162.65" r="21.08" fill="url(#ball)"/>
+  <ellipse cx="171.15" cy="281" rx="18" ry="11" fill="#8D8394" opacity=".12"/>
+  <circle cx="171.15" cy="267.11" r="13.11" fill="url(#ball)"/>
+  <ellipse cx="416.9" cy="270" rx="18" ry="11" fill="#8D8394" opacity=".12"/>
+  <circle cx="416.9" cy="256.5" r="13.11" fill="url(#ball)"/>
 
   <g fill="#2498DD">
     <circle cx="330.13" cy="380.67" r="1.98"/>
