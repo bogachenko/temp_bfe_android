@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_sizes.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_typography.dart';
+import 'widgets/sign_in_illustration.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({
@@ -81,10 +81,7 @@ class _SignInContent extends StatelessWidget {
           dimension: AppSizes.signInIllustration,
           child: Padding(
             padding: const EdgeInsets.only(top: AppSpacing.xxl),
-            child: SvgPicture.asset(
-              'assets/illustrations/fre_signed_out_state.svg',
-              fit: BoxFit.contain,
-            ),
+            child: const SignInIllustration(),
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
