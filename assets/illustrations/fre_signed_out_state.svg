@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="513" viewBox="0 0 512 513">
+  <defs>
+    <linearGradient id="purpleOrange" x1="125" y1="235" x2="281" y2="337" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5D10D6"/>
+      <stop offset=".55" stop-color="#7B20D6"/>
+      <stop offset=".82" stop-color="#A63BCB"/>
+      <stop offset="1" stop-color="#FF831B"/>
+    </linearGradient>
+    <linearGradient id="greenBlue" x1="374" y1="232" x2="438" y2="325" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A8DC45"/>
+      <stop offset=".55" stop-color="#7FD66E"/>
+      <stop offset=".8" stop-color="#45C7D7"/>
+      <stop offset="1" stop-color="#25A9E8"/>
+    </linearGradient>
+    <linearGradient id="bottomOrange" x1="276" y1="333" x2="336" y2="394" gradientUnits="userSpaceOnUse">
+      <stop offset=".05" stop-color="#F37A11"/>
+      <stop offset="1" stop-color="#FF9D00"/>
+    </linearGradient>
+    <linearGradient id="beigeBar" x1="43" y1="374" x2="276" y2="394" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D6B69E"/>
+      <stop offset=".45" stop-color="#DCC3B1"/>
+      <stop offset="1" stop-color="#C8A68C"/>
+    </linearGradient>
+    <radialGradient id="ball" cx=".36" cy=".28" r=".78">
+      <stop offset="0" stop-color="#DDB9FF"/>
+      <stop offset=".35" stop-color="#A25CF3"/>
+      <stop offset=".7" stop-color="#7445F1"/>
+      <stop offset="1" stop-color="#7837D9"/>
+    </radialGradient>
+    <filter id="softShadow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+      <feOffset dy="10"/>
+      <feColorMatrix values="0 0 0 0 0.35 0 0 0 0 0.31 0 0 0 0 0.42 0 0 0 .22 0"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect x="117.5" y="120.5" width="316.5" height="212.14" rx="27" fill="#E7E7E8"/>
+  <rect x="67.21" y="234" width="208.79" height="160.5" rx="15" fill="#E6E0F1" opacity=".74"/>
+  <rect x="363" y="229" width="107.59" height="165.5" rx="15" fill="#E4DFF0" opacity=".78"/>
+
+  <rect x="117.5" y="234" width="158.5" height="100.64" rx="17" fill="url(#purpleOrange)"/>
+  <path d="M276 332.64H144.5c-14.91 0-27-12.09-27-27V234H261c8.28 0 15 6.72 15 15v83.64Z" fill="url(#purpleOrange)"/>
+  <path d="M363 244c0-8.28 6.72-15 15-15h56v76.64c0 14.91-12.09 27-27 27h-44V244Z" fill="url(#greenBlue)"/>
+  <path d="M276 332.64h50.33l21.33 39.98c5.61 10.53-2.02 21.88-13.95 21.88H276v-61.86Z" fill="url(#bottomOrange)"/>
+  <path d="M42.75 373.24a5.09 5.09 0 0 1 5.09-5.09H276v26.35H64c-11.74 0-21.25-9.52-21.25-21.26Z" fill="url(#beigeBar)"/>
+
+  <g filter="url(#softShadow)"><circle cx="275.46" cy="162.65" r="21.08" fill="url(#ball)"/></g>
+  <g filter="url(#softShadow)"><circle cx="171.15" cy="267.11" r="13.11" fill="url(#ball)"/></g>
+  <g filter="url(#softShadow)"><circle cx="416.9" cy="256.5" r="13.11" fill="url(#ball)"/></g>
+
+  <g fill="#2498DD">
+    <circle cx="330.13" cy="380.67" r="1.98"/>
+    <circle cx="314.98" cy="365.52" r="2.63"/>
+    <circle cx="283" cy="338.55" r="2"/>
+    <circle cx="247.41" cy="255.22" r="1.22"/>
+    <circle cx="202.56" cy="262.44" r="1.56"/>
+    <circle cx="267.82" cy="262.44" r="1.56"/>
+    <circle cx="207.75" cy="264.44" r="2"/>
+    <circle cx="177" cy="295.25" r="2.25"/>
+    <circle cx="160.75" cy="314.38" r="1.63"/>
+    <circle cx="123" cy="303.75" r="1.63"/>
+  </g>
+
+  <path d="M115.5 234v71.64c0 16.02 12.98 29 29 29H276v-2H144.5c-14.91 0-27-12.09-27-27V234H261c8.28 0 15 6.72 15 15v83.64h2V249c0-9.39-7.61-17-17-17H117.5v2h-2Z" fill="#F2F1F3"/>
+  <path d="M434 227h-56c-9.39 0-17 7.61-17 17v88.64h2v2h44c16.02 0 29-12.98 29-29V229h-2v-2Zm0 2v76.64c0 14.91-12.09 27-27 27h-44V244c0-8.28 6.72-15 15-15h56Z" fill="#F2F1F3"/>
+</svg>

@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "appName": "Drive",
+  "@appName": {
+    "description": "Application name used by the shell."
+  },
+  "signInTitle": "Protect your files and access them anywhere",
+  "@signInTitle": {
+    "description": "Signed-out first-run experience title."
+  },
+  "signInPrimaryAction": "Sign in",
+  "@signInPrimaryAction": {
+    "description": "Primary action on the signed-out screen."
+  },
+  "signInTertiaryAction": "Skip to my photos",
+  "@signInTertiaryAction": {
+    "description": "Tertiary action on the signed-out screen."
+  }
+}

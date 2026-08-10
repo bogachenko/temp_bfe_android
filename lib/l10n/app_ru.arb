@@ -1,0 +1,7 @@
+{
+  "@@locale": "ru",
+  "appName": "Drive",
+  "signInTitle": "Защищайте свои файлы и получайте доступ к ним в любом месте",
+  "signInPrimaryAction": "Войти",
+  "signInTertiaryAction": "Перейти к моим фотографиям"
+}
