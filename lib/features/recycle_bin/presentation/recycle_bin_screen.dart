@@ -91,6 +91,7 @@ class RecycleBinScreen extends StatelessWidget {
     await showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
+      isScrollControlled: true,
       builder: (sheetContext) {
         return RecycleBinItemActionsSheet(
           item: item,
