@@ -15,5 +15,63 @@
   "signInTertiaryAction": "Skip to my photos",
   "@signInTertiaryAction": {
     "description": "Tertiary action on the signed-out screen."
-  }
+  },
+  "photos": "Photos",
+  "files": "Files",
+  "premium": "Premium",
+  "home": "Home",
+  "myFiles": "My files",
+  "shared": "Shared",
+  "personalVault": "Personal Vault",
+  "sort": "Sort",
+  "sortName": "Name",
+  "sortModified": "Modified",
+  "sortFileSize": "File size",
+  "sortAtoZ": "A to Z",
+  "sortZtoA": "Z to A",
+  "sortOldestToNewest": "Oldest to newest",
+  "sortNewestToOldest": "Newest to oldest",
+  "sortSmallestToLargest": "Smallest to largest",
+  "sortLargestToSmallest": "Largest to smallest",
+  "viewOptions": "Switch view options",
+  "viewAs": "View as",
+  "viewList": "List",
+  "viewIcons": "Icons",
+  "tapToSetUp": "Tap to set up",
+  "relativeOneHourAgo": "1 hour ago",
+  "relativeTwoHoursAgo": "2 hours ago",
+  "relativeYesterday": "Yesterday",
+  "relativeThreeDaysAgo": "3 days ago",
+  "relativeOneWeekAgo": "1 week ago",
+  "folderMetadata": "{count} items · {modified}",
+  "@folderMetadata": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "modified": {"type": "String"}
+    }
+  },
+  "fileMetadata": "{size} · {modified}",
+  "@fileMetadata": {
+    "placeholders": {
+      "size": {"type": "String"},
+      "modified": {"type": "String"}
+    }
+  },
+  "moreActionsForItem": "More actions for {itemName}",
+  "@moreActionsForItem": {
+    "placeholders": {
+      "itemName": {"type": "String"}
+    }
+  },
+  "shareCommand": "Share",
+  "copyLink": "Copy link",
+  "download": "Download",
+  "moveTo": "Move to",
+  "rename": "Rename",
+  "deleteCommand": "Delete",
+  "searchYourFiles": "Search your files",
+  "createOrUpload": "Create or upload",
+  "newFolder": "New folder",
+  "uploadFiles": "Upload files",
+  "scan": "Scan"
 }
