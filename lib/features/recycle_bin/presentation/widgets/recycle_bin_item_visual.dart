@@ -33,11 +33,11 @@ class _GenericFilePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final rect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(
-        AppSizes.recycleGenericFileInset,
-        AppSizes.recycleGenericFileInset,
-        size.width - AppSizes.recycleGenericFileInset * 2,
-        size.height - AppSizes.recycleGenericFileInset * 2,
+      Rect.fromLTRB(
+        AppSizes.recycleGenericFileHorizontalInset,
+        AppSizes.recycleGenericFileVerticalInset,
+        size.width - AppSizes.recycleGenericFileHorizontalInset,
+        size.height - AppSizes.recycleGenericFileVerticalInset,
       ),
       const Radius.circular(AppRadius.recycleGenericFile),
     );

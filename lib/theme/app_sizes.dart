@@ -16,7 +16,8 @@ abstract final class AppSizes {
   static const double recycleBinDetailsTopSpacing = 40;
   static const double recycleBinDetailsActionHeight = 72;
   static const double recycleBinDetailsPropertyRowHeight = 56;
-  static const double recycleGenericFileInset = 4;
+  static const double recycleGenericFileHorizontalInset = 7;
+  static const double recycleGenericFileVerticalInset = 2;
   static const double recycleGenericFileStroke = 1;
   static const double recycleBinOperationIconStroke = 1.7;
   static const double recycleBinInfoDotRadius = 1;
