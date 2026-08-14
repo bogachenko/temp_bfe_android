@@ -3,5 +3,63 @@
   "appName": "Drive",
   "signInTitle": "Защищайте свои файлы и получайте доступ к ним в любом месте",
   "signInPrimaryAction": "Войти",
-  "signInTertiaryAction": "Перейти к моим фотографиям"
+  "signInTertiaryAction": "Перейти к моим фотографиям",
+  "photos": "Фотографии",
+  "files": "Файлы",
+  "premium": "Премиум",
+  "home": "Главная",
+  "myFiles": "Мои файлы",
+  "shared": "Общие",
+  "personalVault": "Личный сейф",
+  "sort": "Сортировать",
+  "sortName": "Имя",
+  "sortModified": "Изменено",
+  "sortFileSize": "Размер файла",
+  "sortAtoZ": "А—Я",
+  "sortZtoA": "Я—А",
+  "sortOldestToNewest": "От старых к новым",
+  "sortNewestToOldest": "От новых к старым",
+  "sortSmallestToLargest": "По возрастанию",
+  "sortLargestToSmallest": "По убыванию",
+  "viewOptions": "Переключить параметры представления",
+  "viewAs": "Посмотреть как",
+  "viewList": "Список",
+  "viewIcons": "Иконки",
+  "tapToSetUp": "Коснитесь, чтобы настроить",
+  "relativeOneHourAgo": "1 час назад",
+  "relativeTwoHoursAgo": "2 часа назад",
+  "relativeYesterday": "Вчера",
+  "relativeThreeDaysAgo": "3 дня назад",
+  "relativeOneWeekAgo": "1 неделю назад",
+  "folderMetadata": "{count} элем. · {modified}",
+  "@folderMetadata": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "modified": {"type": "String"}
+    }
+  },
+  "fileMetadata": "{size} · {modified}",
+  "@fileMetadata": {
+    "placeholders": {
+      "size": {"type": "String"},
+      "modified": {"type": "String"}
+    }
+  },
+  "moreActionsForItem": "Дополнительные действия для {itemName}",
+  "@moreActionsForItem": {
+    "placeholders": {
+      "itemName": {"type": "String"}
+    }
+  },
+  "shareCommand": "Поделиться",
+  "copyLink": "Копировать ссылку",
+  "download": "Скачать",
+  "moveTo": "Переместить в",
+  "rename": "Переименовать",
+  "deleteCommand": "Удалить",
+  "searchYourFiles": "Поиск ваших файлов",
+  "createOrUpload": "Создание или отправка",
+  "newFolder": "Новая папка",
+  "uploadFiles": "Загрузить файлы",
+  "scan": "Сканировать"
 }
