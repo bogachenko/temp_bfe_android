@@ -9,11 +9,15 @@ enum RecycleBinItemKind {
 class RecycleBinItem {
   const RecycleBinItem({
     required this.name,
-    required this.metadata,
+    required this.sizeBytes,
+    required this.modifiedAt,
     required this.kind,
+    this.fileType = '',
   });
 
   final String name;
-  final String metadata;
+  final int sizeBytes;
+  final DateTime modifiedAt;
   final RecycleBinItemKind kind;
+  final String fileType;
 }

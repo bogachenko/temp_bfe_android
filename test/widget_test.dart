@@ -31,7 +31,9 @@ void main() {
     expect(find.text('Skip to my photos'), findsOneWidget);
   });
 
-  testWidgets('renders recycle bin in Russian', (tester) async {
+  testWidgets('renders production-style recycle bin actions and details in Russian', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
@@ -49,7 +51,7 @@ void main() {
 
     expect(find.text('Корзина'), findsOneWidget);
     expect(find.text('УДАЛИТЬ ВСЕ'), findsOneWidget);
-    expect(find.text('Projects'), findsOneWidget);
+    expect(find.text('1Cv8tmp'), findsOneWidget);
     expect(find.text('Quarterly report.pdf'), findsOneWidget);
     expect(find.text('Budget 2026.xlsx'), findsOneWidget);
     expect(find.text('Contract.docx'), findsOneWidget);
@@ -57,7 +59,21 @@ void main() {
     await tester.tap(find.byTooltip('Другие действия').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Восстановить'), findsOneWidget);
     expect(find.text('Удалить'), findsOneWidget);
+    expect(find.text('Восстановить'), findsOneWidget);
+    expect(find.text('Сведения'), findsOneWidget);
+    expect(find.text('1Cv8tmp'), findsWidgets);
+    expect(find.text('553 КБ · 14 июл.'), findsOneWidget);
+
+    await tester.tap(find.text('Сведения'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Сведения'), findsOneWidget);
+    expect(find.text('Тип'), findsOneWidget);
+    expect(find.text('.1CD'), findsOneWidget);
+    expect(find.text('Размер'), findsOneWidget);
+    expect(find.text('553 КБ'), findsOneWidget);
+    expect(find.text('Изменено'), findsOneWidget);
+    expect(find.text('14.07.2026 23:38'), findsOneWidget);
   });
 }

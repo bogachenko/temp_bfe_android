@@ -59,11 +59,53 @@ abstract final class AppTypography {
     color: AppColors.neutralForeground2,
   );
 
+  static const TextStyle bottomSheetPreviewName = TextStyle(
+    fontSize: 16,
+    height: 1.25,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralForeground1,
+  );
+
+  static const TextStyle bottomSheetPreviewMetadata = TextStyle(
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralForeground2,
+  );
+
   static const TextStyle bottomSheetAction = TextStyle(
+    fontSize: 18,
+    height: 1.33,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralForeground1,
+  );
+
+  static const TextStyle detailsFileName = TextStyle(
+    fontSize: 18,
+    height: 1.33,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralForeground1,
+  );
+
+  static const TextStyle detailsActionLabel = TextStyle(
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralForeground2,
+  );
+
+  static const TextStyle detailsPropertyLabel = TextStyle(
     fontSize: 16,
     height: 1.5,
     fontWeight: FontWeight.w400,
     color: AppColors.neutralForeground1,
+  );
+
+  static const TextStyle detailsPropertyValue = TextStyle(
+    fontSize: 16,
+    height: 1.5,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralForeground2,
   );
 
   static const TextStyle fileTypeBadge = TextStyle(

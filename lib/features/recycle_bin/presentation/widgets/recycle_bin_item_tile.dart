@@ -4,7 +4,8 @@ import '../../../../theme/app_sizes.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../../../theme/app_typography.dart';
 import '../../domain/recycle_bin_item.dart';
-import 'recycle_bin_file_icon.dart';
+import '../recycle_bin_item_formatter.dart';
+import 'recycle_bin_item_visual.dart';
 
 class RecycleBinItemTile extends StatelessWidget {
   const RecycleBinItemTile({
@@ -27,7 +28,7 @@ class RecycleBinItemTile extends StatelessWidget {
           Row(
             children: [
               const SizedBox(width: AppSpacing.md),
-              RecycleBinFileIcon(kind: item.kind),
+              RecycleBinItemVisual(kind: item.kind),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
@@ -42,7 +43,7 @@ class RecycleBinItemTile extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.xxs),
                     Text(
-                      item.metadata,
+                      RecycleBinItemFormatter.metadata(context, item),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.recycleItemMetadata,

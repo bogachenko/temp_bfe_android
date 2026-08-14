@@ -3,42 +3,47 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_theme.dart';
 import '../domain/recycle_bin_item.dart';
+import 'recycle_bin_details_screen.dart';
 import 'widgets/recycle_bin_item_actions_sheet.dart';
 import 'widgets/recycle_bin_item_tile.dart';
 
 class RecycleBinScreen extends StatelessWidget {
   const RecycleBinScreen({super.key});
 
-  static const _sampleItems = [
+  static final _sampleItems = [
     RecycleBinItem(
-      name: 'Projects',
-      metadata: '2.9 GB · 2026-08-14',
-      kind: RecycleBinItemKind.folder,
+      name: '1Cv8tmp',
+      sizeBytes: 553 * 1024,
+      modifiedAt: DateTime(2026, 7, 14, 23, 38),
+      kind: RecycleBinItemKind.genericFile,
+      fileType: '.1CD',
     ),
     RecycleBinItem(
-      name: 'Archive',
-      metadata: '604 MB · 2026-08-13',
+      name: '1C_Бухгалтерия учебная',
+      sizeBytes: 537709773,
+      modifiedAt: DateTime(2026, 7, 14, 18, 12),
       kind: RecycleBinItemKind.folder,
     ),
     RecycleBinItem(
       name: 'Quarterly report.pdf',
-      metadata: '1.2 MB · 2026-07-14',
+      sizeBytes: 1258291,
+      modifiedAt: DateTime(2026, 7, 14, 14, 20),
       kind: RecycleBinItemKind.pdf,
+      fileType: '.PDF',
     ),
     RecycleBinItem(
       name: 'Budget 2026.xlsx',
-      metadata: '84 KB · 2026-07-12',
+      sizeBytes: 84 * 1024,
+      modifiedAt: DateTime(2026, 7, 12, 10, 5),
       kind: RecycleBinItemKind.excel,
+      fileType: '.XLSX',
     ),
     RecycleBinItem(
       name: 'Contract.docx',
-      metadata: '243 KB · 2026-07-08',
+      sizeBytes: 243 * 1024,
+      modifiedAt: DateTime(2026, 7, 8, 16, 40),
       kind: RecycleBinItemKind.word,
-    ),
-    RecycleBinItem(
-      name: 'notes.txt',
-      metadata: '8 KB · 2026-07-03',
-      kind: RecycleBinItemKind.genericFile,
+      fileType: '.DOCX',
     ),
   ];
 
@@ -88,8 +93,10 @@ class RecycleBinScreen extends StatelessWidget {
       useSafeArea: true,
       builder: (sheetContext) {
         return RecycleBinItemActionsSheet(
+          item: item,
           restoreLabel: l10n.recycleRestore,
           deleteLabel: l10n.recycleDelete,
+          detailsLabel: l10n.recycleDetails,
           onRestore: () {
             Navigator.of(sheetContext).pop();
             ScaffoldMessenger.of(context).showSnackBar(
@@ -99,6 +106,14 @@ class RecycleBinScreen extends StatelessWidget {
           onDelete: () {
             Navigator.of(sheetContext).pop();
             _confirmDeleteItem(context, item);
+          },
+          onDetails: () {
+            Navigator.of(sheetContext).pop();
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => RecycleBinDetailsScreen(item: item),
+              ),
+            );
           },
         );
       },

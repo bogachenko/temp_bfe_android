@@ -52,6 +52,12 @@ abstract final class AppTheme {
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: AppColors.neutralBackground1,
         surfaceTintColor: AppColors.transparent,
+        showDragHandle: true,
+        dragHandleColor: AppColors.neutralForeground3,
+        dragHandleSize: Size(
+          AppSizes.bottomSheetDragHandleWidth,
+          AppSizes.bottomSheetDragHandleHeight,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(AppRadius.bottomSheet),

@@ -32,6 +32,30 @@
   "@recycleDelete": {
     "description": "Recycle bin item permanent delete action."
   },
+  "recycleDetails": "Details",
+  "@recycleDetails": {
+    "description": "Recycle bin item details action and details screen title."
+  },
+  "recycleDetailsType": "Type",
+  "@recycleDetailsType": {
+    "description": "File type label on the recycle bin details screen."
+  },
+  "recycleDetailsSize": "Size",
+  "@recycleDetailsSize": {
+    "description": "File size label on the recycle bin details screen."
+  },
+  "recycleDetailsModified": "Modified",
+  "@recycleDetailsModified": {
+    "description": "Modified date label on the recycle bin details screen."
+  },
+  "recycleFolderType": "Folder",
+  "@recycleFolderType": {
+    "description": "Localized type value for a folder."
+  },
+  "recycleUnitBytes": "B",
+  "recycleUnitKilobytes": "KB",
+  "recycleUnitMegabytes": "MB",
+  "recycleUnitGigabytes": "GB",
   "recycleMoreActions": "More actions",
   "@recycleMoreActions": {
     "description": "Accessibility tooltip for the recycle bin item overflow button."
