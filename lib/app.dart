@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'features/auth/presentation/sign_in_screen.dart';
+import 'features/recycle_bin/presentation/recycle_bin_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'theme/app_theme.dart';
 
@@ -21,7 +21,7 @@ class App extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const SignInScreen(),
+      home: const RecycleBinScreen(),
     );
   }
 }

@@ -3,5 +3,23 @@
   "appName": "Drive",
   "signInTitle": "Защищайте свои файлы и получайте доступ к ним в любом месте",
   "signInPrimaryAction": "Войти",
-  "signInTertiaryAction": "Перейти к моим фотографиям"
+  "signInTertiaryAction": "Перейти к моим фотографиям",
+  "recycleBinTitle": "Корзина",
+  "recycleDeleteAll": "Удалить все",
+  "recycleRestore": "Восстановить",
+  "recycleDelete": "Удалить",
+  "recycleMoreActions": "Другие действия",
+  "recycleRestored": "Восстановлено",
+  "recycleEmptyConfirmationTitle": "Очистить корзину?",
+  "recycleEmptyConfirmationBody": "Удалить все элементы навсегда?",
+  "recycleDeleteItemConfirmationTitle": "Удалить {itemName}?",
+  "@recycleDeleteItemConfirmationTitle": {
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "recycleDeleteItemConfirmationBody": "Этот элемент будет навсегда удален из OneDrive.",
+  "cancel": "Отмена"
 }

@@ -15,5 +15,54 @@
   "signInTertiaryAction": "Skip to my photos",
   "@signInTertiaryAction": {
     "description": "Tertiary action on the signed-out screen."
+  },
+  "recycleBinTitle": "Recycle bin",
+  "@recycleBinTitle": {
+    "description": "Recycle bin screen title."
+  },
+  "recycleDeleteAll": "Delete all",
+  "@recycleDeleteAll": {
+    "description": "Toolbar action that permanently deletes every recycle bin item."
+  },
+  "recycleRestore": "Restore",
+  "@recycleRestore": {
+    "description": "Recycle bin item action."
+  },
+  "recycleDelete": "Delete",
+  "@recycleDelete": {
+    "description": "Recycle bin item permanent delete action."
+  },
+  "recycleMoreActions": "More actions",
+  "@recycleMoreActions": {
+    "description": "Accessibility tooltip for the recycle bin item overflow button."
+  },
+  "recycleRestored": "Restored",
+  "@recycleRestored": {
+    "description": "Toast shown after a recycle bin item is restored."
+  },
+  "recycleEmptyConfirmationTitle": "Empty recycle bin?",
+  "@recycleEmptyConfirmationTitle": {
+    "description": "Confirmation title for deleting every recycle bin item."
+  },
+  "recycleEmptyConfirmationBody": "Permanently delete all items?",
+  "@recycleEmptyConfirmationBody": {
+    "description": "Confirmation body for deleting every recycle bin item."
+  },
+  "recycleDeleteItemConfirmationTitle": "Delete {itemName}?",
+  "@recycleDeleteItemConfirmationTitle": {
+    "description": "Confirmation title for permanently deleting one recycle bin item.",
+    "placeholders": {
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "recycleDeleteItemConfirmationBody": "This item will be permanently deleted from OneDrive.",
+  "@recycleDeleteItemConfirmationBody": {
+    "description": "Confirmation body for permanently deleting one recycle bin item."
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancellation action."
   }
 }

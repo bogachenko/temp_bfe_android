@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
+
 abstract final class AppGradients {
   static const LinearGradient signInPurpleOrange = LinearGradient(
     begin: Alignment.topLeft,
@@ -55,5 +57,14 @@ abstract final class AppGradients {
       Color(0xFF7837D9),
     ],
     stops: [0, 0.35, 0.7, 1],
+  );
+
+  static const LinearGradient recycleFolderHighlight = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      AppColors.transparent,
+      AppColors.recycleFolderHighlight,
+    ],
   );
 }

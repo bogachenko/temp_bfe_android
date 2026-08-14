@@ -10,6 +10,20 @@ abstract final class AppTypography {
     color: AppColors.neutralForeground1,
   );
 
+  static const TextStyle toolbarTitle = TextStyle(
+    fontSize: 20,
+    height: 1.2,
+    fontWeight: FontWeight.w600,
+    color: AppColors.neutralForeground1,
+  );
+
+  static const TextStyle toolbarAction = TextStyle(
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w600,
+    color: AppColors.brandForeground1,
+  );
+
   static const TextStyle body1 = TextStyle(
     fontSize: 16,
     height: 1.25,
@@ -29,5 +43,33 @@ abstract final class AppTypography {
     height: 1.43,
     fontWeight: FontWeight.w400,
     color: AppColors.neutralForeground2,
+  );
+
+  static const TextStyle recycleItemTitle = TextStyle(
+    fontSize: 15,
+    height: 1.33,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralForeground1,
+  );
+
+  static const TextStyle recycleItemMetadata = TextStyle(
+    fontSize: 12,
+    height: 1.33,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralForeground2,
+  );
+
+  static const TextStyle bottomSheetAction = TextStyle(
+    fontSize: 16,
+    height: 1.5,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralForeground1,
+  );
+
+  static const TextStyle fileTypeBadge = TextStyle(
+    fontSize: 8,
+    height: 1,
+    fontWeight: FontWeight.w700,
+    color: AppColors.neutralForegroundStaticLight,
   );
 }
