@@ -21,6 +21,8 @@ abstract final class AppSizes {
   static const double myFilesGridTileMinWidth = 104;
   static const double myFilesGridTileHeight = 132;
   static const double myFilesGridIconSize = 48;
+  static const int myFilesGridMinColumns = 2;
+  static const int myFilesGridMaxColumns = 4;
 
   static const double myFilesSearchHeight = 48;
   static const double myFilesSearchIconSize = 20;
