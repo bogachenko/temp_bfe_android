@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:temp_bfe_android/features/auth/presentation/sign_in_screen.dart';
 import 'package:temp_bfe_android/features/recycle_bin/presentation/recycle_bin_screen.dart';
+import 'package:temp_bfe_android/features/recycle_bin/presentation/widgets/recycle_bin_item_actions_sheet.dart';
 import 'package:temp_bfe_android/l10n/app_localizations.dart';
 import 'package:temp_bfe_android/theme/app_theme.dart';
 
@@ -63,7 +64,13 @@ void main() {
     expect(find.text('Восстановить'), findsOneWidget);
     expect(find.text('Сведения'), findsOneWidget);
     expect(find.text('1Cv8tmp'), findsWidgets);
-    expect(find.text('553 КБ · 14 июл.'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(RecycleBinItemActionsSheet),
+        matching: find.text('553 КБ · 14 июл.'),
+      ),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text('Сведения'));
     await tester.pumpAndSettle();
