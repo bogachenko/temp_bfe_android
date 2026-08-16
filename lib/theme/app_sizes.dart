@@ -69,4 +69,15 @@ abstract final class AppSizes {
   static const double driveDrawerWidth = 305;
   static const double driveDrawerItemHeight = 48;
   static const double driveDrawerIconSize = 24;
+
+  static const double signOutDialogHorizontalInset = 36;
+  static const double signOutDialogHorizontalPadding = 28;
+  static const double signOutDialogTopPadding = 28;
+  static const double signOutDialogTitleBodyGap = 20;
+  static const double signOutDialogBodyActionsGap = 16;
+  static const double signOutDialogActionHeight = 48;
+  static const double signOutDialogActionMinWidth = 88;
+  static const double signOutDialogActionSpacing = 8;
+  static const double signOutDialogActionsRightPadding = 12;
+  static const double signOutDialogBottomPadding = 12;
 }
