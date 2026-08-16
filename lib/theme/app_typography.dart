@@ -184,4 +184,25 @@ abstract final class AppTypography {
     fontWeight: FontWeight.w600,
     color: AppColors.neutralForeground1,
   );
+
+  static const TextStyle signOutDialogTitle = TextStyle(
+    fontSize: 20,
+    height: 1.2,
+    fontWeight: FontWeight.w600,
+    color: AppColors.neutralForeground1,
+  );
+
+  static const TextStyle signOutDialogBody = TextStyle(
+    fontSize: 18,
+    height: 1.5,
+    fontWeight: FontWeight.w400,
+    color: AppColors.neutralForeground2,
+  );
+
+  static const TextStyle signOutDialogAction = TextStyle(
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w600,
+    color: AppColors.brandForeground1,
+  );
 }
