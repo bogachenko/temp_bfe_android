@@ -27,9 +27,10 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
           domain = Path('lib/features/my_files/domain/drive_item.dart')
-          domain.write_text('''enum DriveItemKind {
+          domain.write_text("""enum DriveItemKind {
             folder,
             personalVault,
             pdf,
@@ -69,7 +70,7 @@ jobs:
               required this.kind,
               required this.modified,
               required this.modifiedSortValue,
-              required this.availableActions,
+              this.availableActions = const <DriveItemAction>[],
               this.sizeBytes,
               this.itemCount,
               this.isShared = false,
@@ -90,13 +91,13 @@ jobs:
             bool get isFile => !isFolder && !isPersonalVault;
             bool get hasActions => availableActions.isNotEmpty;
           }
-          '''.replace('          ', ''))
+          """.replace('          ', ''))
 
           mock = Path('lib/features/my_files/data/mock_drive_items.dart')
-          mock.write_text('''import '../domain/drive_item.dart';
+          mock.write_text("""import '../domain/drive_item.dart';
 
-          // These are explicit mock capability fixtures. Production operation
-          // availability must come from the controller/API state, not item kind.
+          // Explicit mock capability fixture for an ordinary owned folder.
+          // Production must supply operation availability from actual item state.
           const mockOwnedFolderActions = <DriveItemAction>[
             DriveItemAction.share,
             DriveItemAction.delete,
@@ -107,8 +108,7 @@ jobs:
             DriveItemAction.details,
           ];
 
-          // Matches the observed OneDrive file action-sheet state used as the
-          // visual reference for this mock client.
+          // Exact action membership/order observed in the OneDrive file reference.
           const mockReferenceFileActions = <DriveItemAction>[
             DriveItemAction.share,
             DriveItemAction.delete,
@@ -165,7 +165,6 @@ jobs:
               kind: DriveItemKind.personalVault,
               modified: DriveItemModifiedTime.oneWeekAgo,
               modifiedSortValue: 1,
-              availableActions: <DriveItemAction>[],
             ),
             DriveItem(
               id: 'quarterly-report',
@@ -232,55 +231,49 @@ jobs:
               availableActions: mockReferenceFileActions,
             ),
           ];
-          '''.replace('          ', ''))
+          """.replace('          ', ''))
 
           screen = Path('lib/features/my_files/presentation/my_files_screen.dart')
           text = screen.read_text()
 
-          old = '''  Future<void> _showActions(DriveItem item) async {
-            if (item.isPersonalVault) return;
-            final l10n = AppLocalizations.of(context);
-          '''.replace('          ', '')
-          new = '''  Future<void> _showActions(DriveItem item) async {
-            if (item.isPersonalVault || !item.hasActions) return;
-            final l10n = AppLocalizations.of(context);
-          '''.replace('          ', '')
-          assert text.count(old) == 1
-          text = text.replace(old, new)
+          def replace_exact(old, new, expected=1):
+            count = text.count(old)
+            if count != expected:
+              raise RuntimeError(f'expected {expected} occurrences, got {count}: {old[:80]!r}')
+            return text.replace(old, new)
 
-          old_more = 'onMore: item.isPersonalVault ? null : () => onMore(item),'
-          new_more = '''onMore: item.isPersonalVault || !item.hasActions
-              ? null
-              : () => onMore(item),'''
-          assert text.count(old_more) == 2
-          text = text.replace(old_more, new_more)
+          text = replace_exact(
+            'if (item.isPersonalVault) return;',
+            'if (item.isPersonalVault || !item.hasActions) return;',
+          )
+          text = replace_exact(
+            'onMore: item.isPersonalVault ? null : () => onMore(item),',
+            'onMore: item.isPersonalVault || !item.hasActions\n'
+            '    ? null\n'
+            '    : () => onMore(item),',
+            expected=2,
+          )
 
-          old_actions = '''    final topActions = <_SheetAction>[
-              _SheetAction(Icons.ios_share_outlined, l10n.shareCommand),
-              _SheetAction(Icons.delete_outline, l10n.deleteCommand),
-              if (widget.item.isFile)
-                _SheetAction(Icons.download_outlined, l10n.download),
-            ];
-            final bottomActions = <_SheetAction>[
-              _SheetAction(Icons.edit_outlined, l10n.rename),
-              _SheetAction(Icons.copy_outlined, l10n.copyCommand),
-              _SheetAction(Icons.drive_file_move_outline, l10n.moveCommand),
-              if (widget.item.isFile)
-                _SheetAction(Icons.comment_outlined, l10n.comments),
-              _SheetAction(Icons.info_outline, l10n.details),
-            ];
-          '''.replace('          ', '')
-          new_actions = '''    final availableActions = widget.item.availableActions;
-            final topActions = <_SheetAction>[
-              if (availableActions.contains(DriveItemAction.share))
+          text = replace_exact(
+            '''      _SheetAction(Icons.ios_share_outlined, l10n.shareCommand),
+                _SheetAction(Icons.delete_outline, l10n.deleteCommand),
+                if (widget.item.isFile)
+                  _SheetAction(Icons.download_outlined, l10n.download),'''.replace('              ', ''),
+            '''      if (availableActions.contains(DriveItemAction.share))
                 _SheetAction(Icons.ios_share_outlined, l10n.shareCommand),
               if (availableActions.contains(DriveItemAction.delete))
                 _SheetAction(Icons.delete_outline, l10n.deleteCommand),
               if (availableActions.contains(DriveItemAction.download))
-                _SheetAction(Icons.download_outlined, l10n.download),
-            ];
-            final bottomActions = <_SheetAction>[
-              if (availableActions.contains(DriveItemAction.rename))
+                _SheetAction(Icons.download_outlined, l10n.download),'''.replace('              ', ''),
+          )
+          text = replace_exact(
+            '''      _SheetAction(Icons.edit_outlined, l10n.rename),
+                _SheetAction(Icons.copy_outlined, l10n.copyCommand),
+                _SheetAction(Icons.drive_file_move_outline, l10n.moveCommand),
+                if (widget.item.isFile)
+                  _SheetAction(Icons.comment_outlined, l10n.comments),
+                _SheetAction(Icons.info_outline, l10n.details),'''.replace('              ', ''),
+            '''      if (availableActions.contains(DriveItemAction.rename))
                 _SheetAction(Icons.edit_outlined, l10n.rename),
               if (availableActions.contains(DriveItemAction.copy))
                 _SheetAction(Icons.copy_outlined, l10n.copyCommand),
@@ -289,48 +282,27 @@ jobs:
               if (availableActions.contains(DriveItemAction.comments))
                 _SheetAction(Icons.comment_outlined, l10n.comments),
               if (availableActions.contains(DriveItemAction.details))
-                _SheetAction(Icons.info_outline, l10n.details),
-            ];
-          '''.replace('          ', '')
-          assert text.count(old_actions) == 1
-          text = text.replace(old_actions, new_actions)
-
-          old_offline = '''            const SizedBox(height: 16),
-            _buildOfflineAction(l10n.makeAvailableOffline),
-            for (final action in bottomActions) _buildBottomAction(action),
-          '''.replace('          ', '')
-          new_offline = '''            const SizedBox(height: 16),
-            if (availableActions.contains(DriveItemAction.makeAvailableOffline))
-              _buildOfflineAction(l10n.makeAvailableOffline),
-            for (final action in bottomActions) _buildBottomAction(action),
-          '''.replace('          ', '')
-          assert text.count(old_offline) == 1
-          text = text.replace(old_offline, new_offline)
-
+                _SheetAction(Icons.info_outline, l10n.details),'''.replace('              ', ''),
+          )
+          text = replace_exact(
+            '    final topActions = <_SheetAction>[',
+            '    final availableActions = widget.item.availableActions;\n'
+            '    final topActions = <_SheetAction>[',
+          )
+          text = replace_exact(
+            '            _buildOfflineAction(l10n.makeAvailableOffline),',
+            '            if (availableActions.contains(DriveItemAction.makeAvailableOffline))\n'
+            '              _buildOfflineAction(l10n.makeAvailableOffline),',
+          )
           screen.write_text(text)
 
           tests = Path('test/my_files_screen_test.dart')
           text = tests.read_text()
-          old_test = '''  testWidgets('folder action sheet omits file-only actions', (tester) async {
-            final folder = mockDriveItems.singleWhere((item) => item.id == 'folder-1c');
-            await pumpMyFiles(tester, items: <DriveItem>[folder]);
-
-            await tester.tap(find.byKey(const Key('myFilesMore-folder-1c')));
-            await tester.pumpAndSettle();
-
-            expect(find.text(folder.name), findsWidgets);
-            expect(find.text('Share'), findsOneWidget);
-            expect(find.text('Delete'), findsOneWidget);
-            expect(find.text('Make available offline'), findsOneWidget);
-            expect(find.text('Rename'), findsOneWidget);
-            expect(find.text('Copy'), findsOneWidget);
-            expect(find.text('Move'), findsOneWidget);
-            expect(find.text('Details'), findsOneWidget);
-            expect(find.text('Download'), findsNothing);
-            expect(find.text('Comments'), findsNothing);
-          });
-          '''.replace('          ', '')
-          new_test = '''  testWidgets('action sheet follows explicit operation capabilities', (
+          pattern = re.compile(
+            r"  testWidgets\('folder action sheet omits file-only actions', \(tester\) async \{.*?\n  \}\);\n\n(?=  testWidgets\('file actions do not overflow)",
+            re.S,
+          )
+          replacement = """  testWidgets('action sheet follows explicit operation capabilities', (
             tester,
           ) async {
             const folder = DriveItem(
@@ -363,9 +335,11 @@ jobs:
             expect(find.text('Move'), findsNothing);
             expect(find.text('Comments'), findsNothing);
           });
-          '''.replace('          ', '')
-          assert text.count(old_test) == 1
-          text = text.replace(old_test, new_test)
+
+          """.replace('          ', '')
+          text, count = pattern.subn(replacement, text)
+          if count != 1:
+            raise RuntimeError(f'folder test replacement count={count}')
           tests.write_text(text)
           PY
 
