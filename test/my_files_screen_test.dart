@@ -75,6 +75,71 @@ void main() {
     expect(find.text('Личный сейф'), findsWidgets);
   });
 
+  testWidgets('sort popup matches OneDrive two-group contract', (tester) async {
+    await pumpMyFiles(tester);
+
+    await tester.tap(find.byKey(const Key('myFilesSortButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Name'), findsWidgets);
+    expect(find.text('Modified'), findsOneWidget);
+    expect(find.text('File size'), findsOneWidget);
+    expect(find.text('A to Z'), findsOneWidget);
+    expect(find.text('Z to A'), findsOneWidget);
+    expect(find.textContaining('Name ·'), findsNothing);
+    expect(find.textContaining('Modified ·'), findsNothing);
+    expect(find.byType(PopupMenuDivider), findsOneWidget);
+    expect(find.byIcon(Icons.check_rounded), findsNWidgets(2));
+  });
+
+  testWidgets('sort field and direction are independently selectable', (
+    tester,
+  ) async {
+    await pumpMyFiles(tester);
+
+    await tester.tap(find.byKey(const Key('myFilesSortButton')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('myFilesSortField-modified')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('myFilesSortButton')));
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('myFilesSortField-modified')),
+        matching: find.byIcon(Icons.check_rounded),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('myFilesSortDirection-ascending')),
+        matching: find.byIcon(Icons.check_rounded),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byKey(const Key('myFilesSortDirection-descending')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('myFilesSortButton')));
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('myFilesSortField-modified')),
+        matching: find.byIcon(Icons.check_rounded),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('myFilesSortDirection-descending')),
+        matching: find.byIcon(Icons.check_rounded),
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('View as switches List to Icons', (tester) async {
     await pumpMyFiles(tester);
     expect(find.byKey(const Key('myFilesList')), findsOneWidget);

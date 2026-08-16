@@ -18,14 +18,11 @@ import 'widgets/drive_item_icon.dart';
 
 enum MyFilesViewMode { list, icons }
 
-enum MyFilesSort {
-  nameAscending,
-  nameDescending,
-  modifiedNewest,
-  modifiedOldest,
-  sizeSmallest,
-  sizeLargest,
-}
+enum MyFilesSortField { name, modified, size }
+
+enum MyFilesSortDirection { ascending, descending }
+
+enum _MyFilesSortMenuChoice { name, modified, size, ascending, descending }
 
 class MyFilesScreen extends StatefulWidget {
   const MyFilesScreen({
@@ -43,7 +40,8 @@ class MyFilesScreen extends StatefulWidget {
 
 class _MyFilesScreenState extends State<MyFilesScreen> {
   MyFilesViewMode _viewMode = MyFilesViewMode.list;
-  MyFilesSort _sort = MyFilesSort.nameAscending;
+  MyFilesSortField _sortField = MyFilesSortField.name;
+  MyFilesSortDirection _sortDirection = MyFilesSortDirection.ascending;
   bool _fabExpanded = false;
 
   @override
@@ -71,9 +69,13 @@ class _MyFilesScreenState extends State<MyFilesScreen> {
                   _TopBar(accountDisplayName: widget.accountDisplayName),
                   const _PivotBar(),
                   _BrowserHeader(
-                    sort: _sort,
+                    sortField: _sortField,
+                    sortDirection: _sortDirection,
                     viewMode: _viewMode,
-                    onSortChanged: (value) => setState(() => _sort = value),
+                    onSortFieldChanged: (value) =>
+                        setState(() => _sortField = value),
+                    onSortDirectionChanged: (value) =>
+                        setState(() => _sortDirection = value),
                     onViewModeChanged: (value) =>
                         setState(() => _viewMode = value),
                   ),
@@ -112,26 +114,26 @@ class _MyFilesScreenState extends State<MyFilesScreen> {
     final bGroup = b.isFolder || b.isPersonalVault ? 0 : 1;
     if (aGroup != bGroup) return aGroup.compareTo(bGroup);
 
-    switch (_sort) {
-      case MyFilesSort.nameAscending:
-        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-      case MyFilesSort.nameDescending:
-        return b.name.toLowerCase().compareTo(a.name.toLowerCase());
-      case MyFilesSort.modifiedNewest:
-        return b.modifiedSortValue.compareTo(a.modifiedSortValue);
-      case MyFilesSort.modifiedOldest:
-        return a.modifiedSortValue.compareTo(b.modifiedSortValue);
-      case MyFilesSort.sizeSmallest:
-        if (a.sizeBytes == null || b.sizeBytes == null) {
-          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-        }
-        return a.sizeBytes!.compareTo(b.sizeBytes!);
-      case MyFilesSort.sizeLargest:
-        if (a.sizeBytes == null || b.sizeBytes == null) {
-          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-        }
-        return b.sizeBytes!.compareTo(a.sizeBytes!);
+    final comparison = switch (_sortField) {
+      MyFilesSortField.name => a.name.toLowerCase().compareTo(
+        b.name.toLowerCase(),
+      ),
+      MyFilesSortField.modified => a.modifiedSortValue.compareTo(
+        b.modifiedSortValue,
+      ),
+      MyFilesSortField.size => _compareSizes(a, b),
+    };
+
+    return _sortDirection == MyFilesSortDirection.ascending
+        ? comparison
+        : -comparison;
+  }
+
+  int _compareSizes(DriveItem a, DriveItem b) {
+    if (a.sizeBytes == null || b.sizeBytes == null) {
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
     }
+    return a.sizeBytes!.compareTo(b.sizeBytes!);
   }
 
   String _displayName(AppLocalizations l10n, DriveItem item) {
@@ -365,15 +367,19 @@ class _Pivot extends StatelessWidget {
 
 class _BrowserHeader extends StatelessWidget {
   const _BrowserHeader({
-    required this.sort,
+    required this.sortField,
+    required this.sortDirection,
     required this.viewMode,
-    required this.onSortChanged,
+    required this.onSortFieldChanged,
+    required this.onSortDirectionChanged,
     required this.onViewModeChanged,
   });
 
-  final MyFilesSort sort;
+  final MyFilesSortField sortField;
+  final MyFilesSortDirection sortDirection;
   final MyFilesViewMode viewMode;
-  final ValueChanged<MyFilesSort> onSortChanged;
+  final ValueChanged<MyFilesSortField> onSortFieldChanged;
+  final ValueChanged<MyFilesSortDirection> onSortDirectionChanged;
   final ValueChanged<MyFilesViewMode> onViewModeChanged;
 
   @override
@@ -399,7 +405,12 @@ class _BrowserHeader extends StatelessWidget {
             height: AppSizes.myFilesControlsHeight,
             child: Row(
               children: [
-                _SortPopup(sort: sort, onChanged: onSortChanged),
+                _SortPopup(
+                  field: sortField,
+                  direction: sortDirection,
+                  onFieldChanged: onSortFieldChanged,
+                  onDirectionChanged: onSortDirectionChanged,
+                ),
                 const SizedBox(width: AppSpacing.sm),
                 _ViewPopup(viewMode: viewMode, onChanged: onViewModeChanged),
               ],
@@ -412,30 +423,29 @@ class _BrowserHeader extends StatelessWidget {
 }
 
 class _SortPopup extends StatelessWidget {
-  const _SortPopup({required this.sort, required this.onChanged});
+  const _SortPopup({
+    required this.field,
+    required this.direction,
+    required this.onFieldChanged,
+    required this.onDirectionChanged,
+  });
 
-  final MyFilesSort sort;
-  final ValueChanged<MyFilesSort> onChanged;
+  final MyFilesSortField field;
+  final MyFilesSortDirection direction;
+  final ValueChanged<MyFilesSortField> onFieldChanged;
+  final ValueChanged<MyFilesSortDirection> onDirectionChanged;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final criterion = switch (sort) {
-      MyFilesSort.nameAscending || MyFilesSort.nameDescending => l10n.sortName,
-      MyFilesSort.modifiedNewest ||
-      MyFilesSort.modifiedOldest => l10n.sortModified,
-      MyFilesSort.sizeSmallest || MyFilesSort.sizeLargest => l10n.sortFileSize,
-    };
-    final arrowDown = switch (sort) {
-      MyFilesSort.nameDescending ||
-      MyFilesSort.modifiedNewest ||
-      MyFilesSort.sizeLargest => true,
-      _ => false,
+    final criterion = switch (field) {
+      MyFilesSortField.name => l10n.sortName,
+      MyFilesSortField.modified => l10n.sortModified,
+      MyFilesSortField.size => l10n.sortFileSize,
     };
 
-    return PopupMenuButton<MyFilesSort>(
+    return PopupMenuButton<_MyFilesSortMenuChoice>(
       key: const Key('myFilesSortButton'),
-      initialValue: sort,
       tooltip: l10n.sort,
       color: AppColors.neutralBackground1,
       surfaceTintColor: AppColors.transparent,
@@ -447,40 +457,59 @@ class _SortPopup extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.myFilesPopup),
       ),
-      onSelected: onChanged,
+      onSelected: (choice) {
+        switch (choice) {
+          case _MyFilesSortMenuChoice.name:
+            onFieldChanged(MyFilesSortField.name);
+          case _MyFilesSortMenuChoice.modified:
+            onFieldChanged(MyFilesSortField.modified);
+          case _MyFilesSortMenuChoice.size:
+            onFieldChanged(MyFilesSortField.size);
+          case _MyFilesSortMenuChoice.ascending:
+            onDirectionChanged(MyFilesSortDirection.ascending);
+          case _MyFilesSortMenuChoice.descending:
+            onDirectionChanged(MyFilesSortDirection.descending);
+        }
+      },
       itemBuilder: (context) => [
-        for (final option in MyFilesSort.values)
-          PopupMenuItem<MyFilesSort>(
-            value: option,
-            height: AppSizes.myFilesPopupItemHeight,
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: AppSizes.myFilesPopupIconSize,
-                  child: option == sort
-                      ? const Icon(
-                          Icons.check_rounded,
-                          size: AppSizes.myFilesPopupIconSize,
-                          color: AppColors.brandAccent,
-                        )
-                      : null,
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(
-                    _sortOptionLabel(l10n, option),
-                    style: AppTypography.myFilesPopupItem,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        _sortMenuItem(
+          value: _MyFilesSortMenuChoice.name,
+          label: l10n.sortName,
+          selected: field == MyFilesSortField.name,
+          key: const Key('myFilesSortField-name'),
+        ),
+        _sortMenuItem(
+          value: _MyFilesSortMenuChoice.modified,
+          label: l10n.sortModified,
+          selected: field == MyFilesSortField.modified,
+          key: const Key('myFilesSortField-modified'),
+        ),
+        _sortMenuItem(
+          value: _MyFilesSortMenuChoice.size,
+          label: l10n.sortFileSize,
+          selected: field == MyFilesSortField.size,
+          key: const Key('myFilesSortField-size'),
+        ),
+        const PopupMenuDivider(),
+        _sortMenuItem(
+          value: _MyFilesSortMenuChoice.ascending,
+          label: l10n.sortAtoZ,
+          selected: direction == MyFilesSortDirection.ascending,
+          key: const Key('myFilesSortDirection-ascending'),
+        ),
+        _sortMenuItem(
+          value: _MyFilesSortMenuChoice.descending,
+          label: l10n.sortZtoA,
+          selected: direction == MyFilesSortDirection.descending,
+          key: const Key('myFilesSortDirection-descending'),
+        ),
       ],
       child: _ControlPill(
         label: criterion,
         leading: Icon(
-          arrowDown ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+          direction == MyFilesSortDirection.ascending
+              ? Icons.arrow_upward_rounded
+              : Icons.arrow_downward_rounded,
           size: AppSizes.myFilesPopupIconSize,
           color: AppColors.neutralForeground2,
         ),
@@ -488,19 +517,34 @@ class _SortPopup extends StatelessWidget {
     );
   }
 
-  String _sortOptionLabel(AppLocalizations l10n, MyFilesSort option) {
-    return switch (option) {
-      MyFilesSort.nameAscending => '${l10n.sortName} · ${l10n.sortAtoZ}',
-      MyFilesSort.nameDescending => '${l10n.sortName} · ${l10n.sortZtoA}',
-      MyFilesSort.modifiedNewest =>
-        '${l10n.sortModified} · ${l10n.sortNewestToOldest}',
-      MyFilesSort.modifiedOldest =>
-        '${l10n.sortModified} · ${l10n.sortOldestToNewest}',
-      MyFilesSort.sizeSmallest =>
-        '${l10n.sortFileSize} · ${l10n.sortSmallestToLargest}',
-      MyFilesSort.sizeLargest =>
-        '${l10n.sortFileSize} · ${l10n.sortLargestToSmallest}',
-    };
+  PopupMenuItem<_MyFilesSortMenuChoice> _sortMenuItem({
+    required _MyFilesSortMenuChoice value,
+    required String label,
+    required bool selected,
+    required Key key,
+  }) {
+    return PopupMenuItem<_MyFilesSortMenuChoice>(
+      key: key,
+      value: value,
+      height: AppSizes.myFilesPopupItemHeight,
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      child: Row(
+        children: [
+          SizedBox(
+            width: AppSizes.myFilesPopupIconSize,
+            child: selected
+                ? const Icon(
+                    Icons.check_rounded,
+                    size: AppSizes.myFilesPopupIconSize,
+                    color: AppColors.neutralForeground2,
+                  )
+                : null,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(child: Text(label, style: AppTypography.myFilesPopupItem)),
+        ],
+      ),
+    );
   }
 }
 
