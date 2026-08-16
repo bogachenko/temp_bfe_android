@@ -15,4 +15,5 @@ abstract final class AppRadius {
   static const double myFilesPivotIndicator = 1;
 
   static const double driveDrawer = 24;
+  static const double signOutDialog = 12;
 }
