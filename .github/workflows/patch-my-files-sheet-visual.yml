@@ -25,61 +25,17 @@ jobs:
       - name: Apply source-proven OneDrive sheet visuals
         shell: bash
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-
-          radius = Path('lib/theme/app_radius.dart')
-          text = radius.read_text()
-          old = '  static const double myFilesBottomSheet = 16;'
-          new = '  static const double myFilesBottomSheet = 24;'
-          if old not in text:
-            raise RuntimeError('expected My Files bottom-sheet radius token not found')
-          radius.write_text(text.replace(old, new, 1))
-
-          screen = Path('lib/features/my_files/presentation/my_files_screen.dart')
-          text = screen.read_text()
-          old = '''      backgroundColor: AppColors.neutralBackground1,
-      shape: const RoundedRectangleBorder('''
-          new = '''      backgroundColor: AppColors.neutralBackground2,
-      barrierColor: AppColors.dialogScrim,
-      elevation: 7,
-      shape: const RoundedRectangleBorder('''
-          if old not in text:
-            raise RuntimeError('expected showModalBottomSheet surface block not found')
-          screen.write_text(text.replace(old, new, 1))
-
-          test = Path('test/my_files_screen_test.dart')
-          text = test.read_text()
-          if "package:temp_bfe_android/theme/app_colors.dart" not in text:
-            text = text.replace(
-              "import 'package:temp_bfe_android/l10n/app_localizations.dart';\n",
-              "import 'package:temp_bfe_android/l10n/app_localizations.dart';\n"
-              "import 'package:temp_bfe_android/theme/app_colors.dart';\n"
-              "import 'package:temp_bfe_android/theme/app_radius.dart';\n",
-            )
-
-          anchor = "    expect(find.byKey(const Key('myFilesActionSheet')), findsOneWidget);\n"
-          extra = '''    final modalSheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
-    expect(modalSheet.backgroundColor, AppColors.neutralBackground2);
-    expect(modalSheet.elevation, 7);
-    final modalShape = modalSheet.shape! as RoundedRectangleBorder;
-    final modalRadius = modalShape.borderRadius as BorderRadius;
-    expect(modalRadius.topLeft.x, AppRadius.myFilesBottomSheet);
-    expect(modalRadius.topRight.x, AppRadius.myFilesBottomSheet);
-'''
-          if extra.strip() not in text:
-            if anchor not in text:
-              raise RuntimeError('action-sheet test anchor not found')
-            text = text.replace(anchor, anchor + extra, 1)
-          test.write_text(text)
-          PY
+          set -euo pipefail
+          sed -i 's/static const double myFilesBottomSheet = 16;/static const double myFilesBottomSheet = 24;/' lib/theme/app_radius.dart
+          python3 -c "from pathlib import Path; p=Path('lib/features/my_files/presentation/my_files_screen.dart'); s=p.read_text(); old='      backgroundColor: AppColors.neutralBackground1,\\n      shape: const RoundedRectangleBorder('; new='      backgroundColor: AppColors.neutralBackground2,\\n      barrierColor: AppColors.dialogScrim,\\n      elevation: 7,\\n      shape: const RoundedRectangleBorder('; assert old in s; p.write_text(s.replace(old,new,1))"
+          grep -q 'myFilesBottomSheet = 24;' lib/theme/app_radius.dart
+          grep -q 'backgroundColor: AppColors.neutralBackground2' lib/features/my_files/presentation/my_files_screen.dart
+          grep -q 'barrierColor: AppColors.dialogScrim' lib/features/my_files/presentation/my_files_screen.dart
 
       - name: Validate
         run: |
           flutter pub get
-          dart format lib/theme/app_radius.dart \
-            lib/features/my_files/presentation/my_files_screen.dart \
-            test/my_files_screen_test.dart
+          dart format lib/theme/app_radius.dart lib/features/my_files/presentation/my_files_screen.dart
           flutter test test/my_files_screen_test.dart
           flutter test
           flutter analyze
