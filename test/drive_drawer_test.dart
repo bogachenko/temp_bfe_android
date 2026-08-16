@@ -63,9 +63,17 @@ void main() {
     final confirm = find.byKey(const Key('signOutDialogConfirm'));
 
     expect(dialog, findsOneWidget);
-    expect(find.text('Sign out'), findsOneWidget);
     expect(
-      find.text('Do you want to sign out of your personal OneDrive account?'),
+      find.descendant(of: dialog, matching: find.text('Sign out')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: dialog,
+        matching: find.text(
+          'Do you want to sign out of your personal OneDrive account?',
+        ),
+      ),
       findsOneWidget,
     );
     expect(
