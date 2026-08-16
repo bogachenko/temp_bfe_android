@@ -113,13 +113,13 @@ void main() {
     );
     expect(
       find.descendant(
-        of: find.byKey(const Key('myFilesSortDirection-ascending')),
+        of: find.byKey(const Key('myFilesSortDirection-primary')),
         matching: find.byIcon(Icons.check_rounded),
       ),
       findsOneWidget,
     );
 
-    await tester.tap(find.byKey(const Key('myFilesSortDirection-descending')));
+    await tester.tap(find.byKey(const Key('myFilesSortDirection-secondary')));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('myFilesSortButton')));
@@ -133,12 +133,35 @@ void main() {
     );
     expect(
       find.descendant(
-        of: find.byKey(const Key('myFilesSortDirection-descending')),
+        of: find.byKey(const Key('myFilesSortDirection-secondary')),
         matching: find.byIcon(Icons.check_rounded),
       ),
       findsOneWidget,
     );
   });
+
+  testWidgets('sort direction labels follow selected field', (tester) async {
+    await pumpMyFiles(tester);
+    await tester.tap(find.byKey(const Key('myFilesSortButton')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('myFilesSortField-modified')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('myFilesSortButton')));
+    await tester.pumpAndSettle();
+    expect(find.text('Newest to oldest'), findsOneWidget);
+    expect(find.text('Oldest to newest'), findsOneWidget);
+    expect(find.text('A to Z'), findsNothing);
+    expect(find.text('Z to A'), findsNothing);
+  });
+
+  testWidgets(
+    'browser header uses plain sort control and sliders view button',
+    (tester) async {
+      await pumpMyFiles(tester);
+      expect(find.byKey(const Key('myFilesSortControl')), findsOneWidget);
+      expect(find.byKey(const Key('myFilesViewOptionsIcon')), findsOneWidget);
+    },
+  );
 
   testWidgets('View as switches List to Icons', (tester) async {
     await pumpMyFiles(tester);
