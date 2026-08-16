@@ -79,8 +79,8 @@
   "drawerHelpAndFeedback": "Help and feedback",
   "drawerSignOut": "Sign out",
   "drawerPrivacyAndCookies": "Privacy and cookies",
-  "signOutConfirmationTitle": "Sign out?",
-  "signOutConfirmationBodyPersonal": "Signing out will also remove all offline files.\nDo you want to continue?",
+  "signOutConfirmationTitle": "Sign out",
+  "signOutConfirmationBodyPersonal": "Do you want to sign out of your personal OneDrive account?",
   "recycleBinTitle": "Recycle bin",
   "@recycleBinTitle": {
     "description": "Recycle bin screen title."
