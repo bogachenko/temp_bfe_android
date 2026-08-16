@@ -171,7 +171,6 @@ class _SignOutConfirmationDialog extends StatelessWidget {
     );
 
     return Dialog(
-      key: const Key('signOutDialog'),
       insetPadding: const EdgeInsets.symmetric(
         horizontal: AppSizes.signOutDialogHorizontalInset,
       ),
@@ -182,6 +181,7 @@ class _SignOutConfirmationDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.signOutDialog),
       ),
       child: SizedBox(
+        key: const Key('signOutDialog'),
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.only(
