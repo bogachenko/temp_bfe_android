@@ -165,19 +165,6 @@ class _MyFilesScreenState extends State<MyFilesScreen> {
   Future<void> _showActions(DriveItem item) async {
     if (item.isPersonalVault) return;
     final l10n = AppLocalizations.of(context);
-    final actions = <_ItemAction>[
-      _ItemAction(Icons.ios_share_outlined, l10n.shareCommand),
-      _ItemAction(Icons.link_rounded, l10n.copyLink),
-      if (item.isFile)
-        _ItemAction(Icons.download_outlined, l10n.download),
-      _ItemAction(Icons.drive_file_move_outline, l10n.moveTo),
-      _ItemAction(Icons.edit_outlined, l10n.rename),
-      _ItemAction(
-        Icons.delete_outline,
-        l10n.deleteCommand,
-        destructive: true,
-      ),
-    ];
 
     await showModalBottomSheet<void>(
       context: context,
@@ -190,8 +177,9 @@ class _MyFilesScreenState extends State<MyFilesScreen> {
         ),
       ),
       builder: (context) => _ItemActionsSheet(
+        item: item,
         title: _displayName(l10n, item),
-        actions: actions,
+        metadata: _metadata(l10n, item),
       ),
     );
   }
@@ -1046,78 +1034,214 @@ class _CreateAction extends StatelessWidget {
   }
 }
 
-class _ItemActionsSheet extends StatelessWidget {
-  const _ItemActionsSheet({required this.title, required this.actions});
+class _ItemActionsSheet extends StatefulWidget {
+  const _ItemActionsSheet({
+    required this.item,
+    required this.title,
+    required this.metadata,
+  });
 
+  final DriveItem item;
   final String title;
-  final List<_ItemAction> actions;
+  final String metadata;
+
+  @override
+  State<_ItemActionsSheet> createState() => _ItemActionsSheetState();
+}
+
+class _ItemActionsSheetState extends State<_ItemActionsSheet> {
+  static const double _handleWidth = 36;
+  static const double _handleHeight = 4;
+  static const double _previewSize = 72;
+  static const double _topActionHeight = 72;
+  static const double _topActionRadius = 10;
+  static const double _bottomActionHeight = 48;
+  static const double _actionIconSize = 24;
+
+  bool _availableOffline = false;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final topActions = <_SheetAction>[
+      _SheetAction(Icons.ios_share_outlined, l10n.shareCommand),
+      _SheetAction(Icons.delete_outline, l10n.deleteCommand),
+      if (widget.item.isFile)
+        _SheetAction(Icons.download_outlined, l10n.download),
+    ];
+    final bottomActions = <_SheetAction>[
+      _SheetAction(Icons.edit_outlined, l10n.rename),
+      _SheetAction(Icons.copy_outlined, l10n.copyCommand),
+      _SheetAction(Icons.drive_file_move_outline, l10n.moveCommand),
+      if (widget.item.isFile)
+        _SheetAction(Icons.comment_outlined, l10n.comments),
+      _SheetAction(Icons.info_outline, l10n.details),
+    ];
+
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewPaddingOf(context).bottom),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: AppSpacing.sm),
-          Container(
-            width: AppSizes.myFilesBottomSheetHandleWidth,
-            height: AppSizes.myFilesBottomSheetHandleHeight,
-            decoration: BoxDecoration(
-              color: AppColors.neutralStroke1,
-              borderRadius: BorderRadius.circular(AppRadius.pill),
+      child: SingleChildScrollView(
+        child: Column(
+          key: const Key('myFilesActionSheet'),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 12, bottom: 24),
+              child: Container(
+                width: _handleWidth,
+                height: _handleHeight,
+                decoration: BoxDecoration(
+                  color: AppColors.neutralForeground2,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg,
-              vertical: AppSpacing.lg,
+            SizedBox(
+              height: _previewSize,
+              child: Center(
+                child: DriveItemIcon(item: widget.item, size: _previewSize),
+              ),
             ),
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Text(
-                title,
+                widget.title,
+                key: const Key('myFilesActionSheetName'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppTypography.myFilesBottomSheetTitle,
+                textAlign: TextAlign.center,
+                style: AppTypography.myFilesPopupItem,
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
+              child: Text(
+                widget.metadata,
+                key: const Key('myFilesActionSheetMetadata'),
+                textAlign: TextAlign.center,
+                style: AppTypography.myFilesRowMetadata,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: SizedBox(
+                height: _topActionHeight,
+                child: Row(
+                  key: const Key('myFilesActionSheetTopActions'),
+                  children: [
+                    for (var index = 0; index < topActions.length; index++) ...[
+                      if (index != 0) const SizedBox(width: 8),
+                      Expanded(child: _buildTopAction(topActions[index])),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildOfflineAction(l10n.makeAvailableOffline),
+            for (final action in bottomActions) _buildBottomAction(action),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopAction(_SheetAction action) {
+    return Material(
+      color: AppColors.neutralBackground2,
+      borderRadius: BorderRadius.circular(_topActionRadius),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => Navigator.of(context).pop(),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                action.icon,
+                size: _actionIconSize,
+                color: AppColors.neutralForeground1,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                action.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: AppTypography.myFilesRowMetadata.copyWith(
+                  color: AppColors.neutralForeground1,
+                ),
+              ),
+            ],
           ),
-          for (final action in actions)
-            SizedBox(
-              height: AppSizes.myFilesBottomSheetActionHeight,
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg,
-                ),
-                leading: Icon(
-                  action.icon,
-                  color: action.destructive
-                      ? AppColors.destructive
-                      : AppColors.neutralForeground1,
-                ),
-                title: Text(
-                  action.label,
-                  style: AppTypography.myFilesPopupItem.copyWith(
-                    color: action.destructive
-                        ? AppColors.destructive
-                        : AppColors.neutralForeground1,
-                  ),
-                ),
-                onTap: () => Navigator.of(context).pop(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOfflineAction(String label) {
+    return SizedBox(
+      key: const Key('myFilesActionSheetOffline'),
+      height: _bottomActionHeight,
+      child: InkWell(
+        onTap: () => setState(() => _availableOffline = !_availableOffline),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.cloud_download_outlined,
+                size: _actionIconSize,
+                color: AppColors.neutralForeground1,
               ),
-            ),
-          const SizedBox(height: AppSpacing.sm),
-        ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(label, style: AppTypography.myFilesPopupItem),
+              ),
+              Switch(
+                value: _availableOffline,
+                onChanged: (value) => setState(() => _availableOffline = value),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomAction(_SheetAction action) {
+    return SizedBox(
+      height: _bottomActionHeight,
+      child: InkWell(
+        onTap: () => Navigator.of(context).pop(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Icon(
+                action.icon,
+                size: _actionIconSize,
+                color: AppColors.neutralForeground1,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  action.label,
+                  style: AppTypography.myFilesPopupItem,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-class _ItemAction {
-  const _ItemAction(this.icon, this.label, {this.destructive = false});
+class _SheetAction {
+  const _SheetAction(this.icon, this.label);
 
   final IconData icon;
   final String label;
-  final bool destructive;
 }
