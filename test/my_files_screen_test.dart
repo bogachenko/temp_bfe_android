@@ -13,8 +13,9 @@ void main() {
     WidgetTester tester, {
     Locale locale = const Locale('en'),
     List<DriveItem> items = mockDriveItems,
+    Size viewSize = const Size(390, 844),
   }) async {
-    tester.view.physicalSize = const Size(390, 844);
+    tester.view.physicalSize = viewSize;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -113,5 +114,23 @@ void main() {
     expect(find.text('Share'), findsOneWidget);
     expect(find.text('Download'), findsOneWidget);
     expect(find.text('Rename'), findsOneWidget);
+  });
+
+  testWidgets('file actions do not overflow on compact Android height', (
+    tester,
+  ) async {
+    final video = mockDriveItems.singleWhere((item) => item.id == 'demo-video');
+    await pumpMyFiles(
+      tester,
+      items: <DriveItem>[video],
+      viewSize: const Size(390, 650),
+    );
+
+    await tester.tap(find.byKey(const Key('myFilesMore-demo-video')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Demo video.mp4'), findsWidgets);
+    expect(find.text('Delete'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
