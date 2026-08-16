@@ -48,7 +48,7 @@ void main() {
     expect(find.text('Delete all'), findsOneWidget);
   });
 
-  testWidgets('Sign out is confirmed before returning to sign in', (
+  testWidgets('Sign out matches OneDrive confirmation contract', (
     tester,
   ) async {
     await pumpSignedInApp(tester);
@@ -58,14 +58,21 @@ void main() {
     await tester.tap(find.byKey(const Key('driveDrawerSignOut')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Sign out?'), findsOneWidget);
+    final dialog = find.byKey(const Key('signOutDialog'));
+    final cancel = find.byKey(const Key('signOutDialogCancel'));
+    final confirm = find.byKey(const Key('signOutDialogConfirm'));
+
+    expect(dialog, findsOneWidget);
+    expect(find.text('Sign out'), findsOneWidget);
     expect(
-      find.text(
-        'Signing out will also remove all offline files.\n'
-        'Do you want to continue?',
-      ),
+      find.text('Do you want to sign out of your personal OneDrive account?'),
       findsOneWidget,
     );
+    expect(
+      tester.getSize(dialog).width,
+      390 - (AppSizes.signOutDialogHorizontalInset * 2),
+    );
+    expect(tester.getCenter(cancel).dy, tester.getCenter(confirm).dy);
 
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
