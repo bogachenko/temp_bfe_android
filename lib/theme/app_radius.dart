@@ -13,4 +13,6 @@ abstract final class AppRadius {
   static const double myFilesBottomSheet = 20;
   static const double myFilesFabLabel = 6;
   static const double myFilesPivotIndicator = 1;
+
+  static const double driveDrawer = 24;
 }
