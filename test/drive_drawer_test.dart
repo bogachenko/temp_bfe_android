@@ -45,7 +45,7 @@ void main() {
 
     expect(find.byKey(const Key('driveNavigationDrawer')), findsNothing);
     expect(find.text('Recycle bin'), findsOneWidget);
-    expect(find.text('Delete all'), findsOneWidget);
+    expect(find.text('DELETE ALL'), findsOneWidget);
   });
 
   testWidgets('Sign out matches OneDrive confirmation contract', (
