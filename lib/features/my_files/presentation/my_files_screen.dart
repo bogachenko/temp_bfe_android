@@ -1054,8 +1054,6 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
   static const double _handleHeight = 4;
   static const double _previewSize = 72;
   static const double _topActionHeight = 72;
-  static const double _topActionRadius = 10;
-  static const double _bottomActionHeight = 48;
   static const double _actionIconSize = 24;
 
   bool _availableOffline = false;
@@ -1130,10 +1128,8 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
                 child: Row(
                   key: const Key('myFilesActionSheetTopActions'),
                   children: [
-                    for (var index = 0; index < topActions.length; index++) ...[
-                      if (index != 0) const SizedBox(width: 8),
-                      Expanded(child: _buildTopAction(topActions[index])),
-                    ],
+                    for (final action in topActions)
+                      Expanded(child: _buildTopAction(action)),
                   ],
                 ),
               ),
@@ -1148,91 +1144,118 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
   }
 
   Widget _buildTopAction(_SheetAction action) {
-    return Material(
-      color: AppColors.neutralBackground2,
-      borderRadius: BorderRadius.circular(_topActionRadius),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => Navigator.of(context).pop(),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                action.icon,
-                size: _actionIconSize,
-                color: AppColors.neutralForeground1,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                action.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: AppTypography.myFilesRowMetadata.copyWith(
-                  color: AppColors.neutralForeground1,
+    return InkWell(
+      onTap: () => Navigator.of(context).pop(),
+      child: Padding(
+        padding: const EdgeInsets.all(1),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 2),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Icon(
+                    action.icon,
+                    size: _actionIconSize,
+                    color: AppColors.neutralForeground1,
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Text(
+                    action.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: AppTypography.myFilesRowMetadata.copyWith(
+                      color: AppColors.neutralForeground1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildOfflineAction(String label) {
-    return SizedBox(
+    return InkWell(
       key: const Key('myFilesActionSheetOffline'),
-      height: _bottomActionHeight,
-      child: InkWell(
-        onTap: () => setState(() => _availableOffline = !_availableOffline),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.cloud_download_outlined,
-                size: _actionIconSize,
-                color: AppColors.neutralForeground1,
+      onTap: () => setState(() => _availableOffline = !_availableOffline),
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(label, style: AppTypography.myFilesPopupItem),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.cloud_download_outlined,
+                    size: _actionIconSize,
+                    color: AppColors.neutralForeground1,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      label,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.myFilesPopupItem.copyWith(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              Switch(
-                value: _availableOffline,
-                onChanged: (value) => setState(() => _availableOffline = value),
-              ),
-            ],
+            ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: 16),
+            child: Switch(
+              value: _availableOffline,
+              onChanged: (value) => setState(() => _availableOffline = value),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildBottomAction(_SheetAction action) {
-    return SizedBox(
-      height: _bottomActionHeight,
-      child: InkWell(
-        onTap: () => Navigator.of(context).pop(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              Icon(
-                action.icon,
-                size: _actionIconSize,
-                color: AppColors.neutralForeground1,
+    return InkWell(
+      onTap: () => Navigator.of(context).pop(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(
+              action.icon,
+              size: _actionIconSize,
+              color: AppColors.neutralForeground1,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                action.label,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.myFilesPopupItem.copyWith(fontSize: 16),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  action.label,
-                  style: AppTypography.myFilesPopupItem,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
