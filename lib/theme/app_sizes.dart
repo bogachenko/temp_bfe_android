@@ -26,6 +26,7 @@ abstract final class AppSizes {
 
   static const double myFilesTopBarHeight = 56;
   static const double myFilesAvatarSize = 36;
+  static const double myFilesAvatarTapTargetWidth = 60;
   static const double myFilesModeSwitcherHeight = 36;
   static const double myFilesPremiumButtonSize = 40;
   static const double myFilesPivotBarHeight = 44;
@@ -64,4 +65,8 @@ abstract final class AppSizes {
   static const double myFilesBottomSheetHandleHeight = 4;
   static const double myFilesBottomSheetActionHeight = 52;
   static const double myFilesBottomOverlayInset = 80;
+
+  static const double driveDrawerWidth = 305;
+  static const double driveDrawerItemHeight = 48;
+  static const double driveDrawerIconSize = 24;
 }
