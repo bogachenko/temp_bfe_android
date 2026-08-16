@@ -1,4 +1,4 @@
-name: Patch My Files action sheet
+name: Patch My Files action capabilities
 
 on:
   push:
@@ -18,144 +18,369 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Apply production OneDrive secondary-row contract
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Patch capability-driven action sheet
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path("lib/features/my_files/presentation/my_files_screen.dart")
-          text = path.read_text()
-
-          old_constant = "  static const double _bottomActionHeight = 48;\n"
-          assert text.count(old_constant) == 1
-          text = text.replace(old_constant, "")
-
-          old_offline = '''  Widget _buildOfflineAction(String label) {
-            return SizedBox(
-              key: const Key('myFilesActionSheetOffline'),
-              height: _bottomActionHeight,
-              child: InkWell(
-                onTap: () => setState(() => _availableOffline = !_availableOffline),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.cloud_download_outlined,
-                        size: _actionIconSize,
-                        color: AppColors.neutralForeground1,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(label, style: AppTypography.myFilesPopupItem),
-                      ),
-                      Switch(
-                        value: _availableOffline,
-                        onChanged: (value) => setState(() => _availableOffline = value),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
+          domain = Path('lib/features/my_files/domain/drive_item.dart')
+          domain.write_text('''enum DriveItemKind {
+            folder,
+            personalVault,
+            pdf,
+            excel,
+            word,
+            powerPoint,
+            photo,
+            text,
+            video,
+            generic,
           }
-          '''
-          new_offline = '''  Widget _buildOfflineAction(String label) {
-            return InkWell(
-              key: const Key('myFilesActionSheetOffline'),
-              onTap: () => setState(() => _availableOffline = !_availableOffline),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.cloud_download_outlined,
-                      size: _actionIconSize,
-                      color: AppColors.neutralForeground1,
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        label,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.myFilesPopupItem.copyWith(fontSize: 16),
-                      ),
-                    ),
-                    Switch(
-                      value: _availableOffline,
-                      onChanged: (value) => setState(() => _availableOffline = value),
-                    ),
-                  ],
-                ),
-              ),
-            );
+
+          enum DriveItemModifiedTime {
+            oneHourAgo,
+            twoHoursAgo,
+            yesterday,
+            threeDaysAgo,
+            oneWeekAgo,
           }
-          '''
+
+          enum DriveItemAction {
+            share,
+            delete,
+            download,
+            makeAvailableOffline,
+            rename,
+            copy,
+            move,
+            comments,
+            details,
+          }
+
+          class DriveItem {
+            const DriveItem({
+              required this.id,
+              required this.name,
+              required this.kind,
+              required this.modified,
+              required this.modifiedSortValue,
+              required this.availableActions,
+              this.sizeBytes,
+              this.itemCount,
+              this.isShared = false,
+            });
+
+            final String id;
+            final String name;
+            final DriveItemKind kind;
+            final DriveItemModifiedTime modified;
+            final int modifiedSortValue;
+            final List<DriveItemAction> availableActions;
+            final int? sizeBytes;
+            final int? itemCount;
+            final bool isShared;
+
+            bool get isFolder => kind == DriveItemKind.folder;
+            bool get isPersonalVault => kind == DriveItemKind.personalVault;
+            bool get isFile => !isFolder && !isPersonalVault;
+            bool get hasActions => availableActions.isNotEmpty;
+          }
+          '''.replace('          ', ''))
+
+          mock = Path('lib/features/my_files/data/mock_drive_items.dart')
+          mock.write_text('''import '../domain/drive_item.dart';
+
+          // These are explicit mock capability fixtures. Production operation
+          // availability must come from the controller/API state, not item kind.
+          const mockOwnedFolderActions = <DriveItemAction>[
+            DriveItemAction.share,
+            DriveItemAction.delete,
+            DriveItemAction.makeAvailableOffline,
+            DriveItemAction.rename,
+            DriveItemAction.copy,
+            DriveItemAction.move,
+            DriveItemAction.details,
+          ];
+
+          // Matches the observed OneDrive file action-sheet state used as the
+          // visual reference for this mock client.
+          const mockReferenceFileActions = <DriveItemAction>[
+            DriveItemAction.share,
+            DriveItemAction.delete,
+            DriveItemAction.download,
+            DriveItemAction.makeAvailableOffline,
+            DriveItemAction.rename,
+            DriveItemAction.copy,
+            DriveItemAction.move,
+            DriveItemAction.comments,
+            DriveItemAction.details,
+          ];
+
+          const mockDriveItems = <DriveItem>[
+            DriveItem(
+              id: 'folder-1c',
+              name: '1C',
+              kind: DriveItemKind.folder,
+              modified: DriveItemModifiedTime.oneHourAgo,
+              modifiedSortValue: 5,
+              itemCount: 18,
+              availableActions: mockOwnedFolderActions,
+            ),
+            DriveItem(
+              id: 'folder-chalkboards',
+              name: 'chalkboards',
+              kind: DriveItemKind.folder,
+              modified: DriveItemModifiedTime.twoHoursAgo,
+              modifiedSortValue: 4,
+              itemCount: 7,
+              isShared: true,
+              availableActions: mockOwnedFolderActions,
+            ),
+            DriveItem(
+              id: 'folder-documents',
+              name: 'Документы',
+              kind: DriveItemKind.folder,
+              modified: DriveItemModifiedTime.yesterday,
+              modifiedSortValue: 3,
+              itemCount: 24,
+              availableActions: mockOwnedFolderActions,
+            ),
+            DriveItem(
+              id: 'folder-desktop',
+              name: 'Рабочий стол',
+              kind: DriveItemKind.folder,
+              modified: DriveItemModifiedTime.threeDaysAgo,
+              modifiedSortValue: 2,
+              itemCount: 11,
+              availableActions: mockOwnedFolderActions,
+            ),
+            DriveItem(
+              id: 'personal-vault',
+              name: 'personal-vault',
+              kind: DriveItemKind.personalVault,
+              modified: DriveItemModifiedTime.oneWeekAgo,
+              modifiedSortValue: 1,
+              availableActions: <DriveItemAction>[],
+            ),
+            DriveItem(
+              id: 'quarterly-report',
+              name: 'Quarterly report.pdf',
+              kind: DriveItemKind.pdf,
+              modified: DriveItemModifiedTime.oneHourAgo,
+              modifiedSortValue: 5,
+              sizeBytes: 2400000,
+              isShared: true,
+              availableActions: mockReferenceFileActions,
+            ),
+            DriveItem(
+              id: 'budget-2026',
+              name: 'Budget 2026.xlsx',
+              kind: DriveItemKind.excel,
+              modified: DriveItemModifiedTime.twoHoursAgo,
+              modifiedSortValue: 4,
+              sizeBytes: 784000,
+              availableActions: mockReferenceFileActions,
+            ),
+            DriveItem(
+              id: 'project-brief',
+              name: 'Project brief.docx',
+              kind: DriveItemKind.word,
+              modified: DriveItemModifiedTime.yesterday,
+              modifiedSortValue: 3,
+              sizeBytes: 138000,
+              availableActions: mockReferenceFileActions,
+            ),
+            DriveItem(
+              id: 'pitch-deck',
+              name: 'Pitch deck.pptx',
+              kind: DriveItemKind.powerPoint,
+              modified: DriveItemModifiedTime.threeDaysAgo,
+              modifiedSortValue: 2,
+              sizeBytes: 5100000,
+              availableActions: mockReferenceFileActions,
+            ),
+            DriveItem(
+              id: 'plant-sample',
+              name: 'Plant disease sample.jpg',
+              kind: DriveItemKind.photo,
+              modified: DriveItemModifiedTime.threeDaysAgo,
+              modifiedSortValue: 2,
+              sizeBytes: 3600000,
+              availableActions: mockReferenceFileActions,
+            ),
+            DriveItem(
+              id: 'notes',
+              name: 'Notes.txt',
+              kind: DriveItemKind.text,
+              modified: DriveItemModifiedTime.oneWeekAgo,
+              modifiedSortValue: 1,
+              sizeBytes: 18000,
+              availableActions: mockReferenceFileActions,
+            ),
+            DriveItem(
+              id: 'demo-video',
+              name: 'Demo video.mp4',
+              kind: DriveItemKind.video,
+              modified: DriveItemModifiedTime.oneWeekAgo,
+              modifiedSortValue: 1,
+              sizeBytes: 28400000,
+              availableActions: mockReferenceFileActions,
+            ),
+          ];
+          '''.replace('          ', ''))
+
+          screen = Path('lib/features/my_files/presentation/my_files_screen.dart')
+          text = screen.read_text()
+
+          old = '''  Future<void> _showActions(DriveItem item) async {
+            if (item.isPersonalVault) return;
+            final l10n = AppLocalizations.of(context);
+          '''.replace('          ', '')
+          new = '''  Future<void> _showActions(DriveItem item) async {
+            if (item.isPersonalVault || !item.hasActions) return;
+            final l10n = AppLocalizations.of(context);
+          '''.replace('          ', '')
+          assert text.count(old) == 1
+          text = text.replace(old, new)
+
+          old_more = 'onMore: item.isPersonalVault ? null : () => onMore(item),'
+          new_more = '''onMore: item.isPersonalVault || !item.hasActions
+              ? null
+              : () => onMore(item),'''
+          assert text.count(old_more) == 2
+          text = text.replace(old_more, new_more)
+
+          old_actions = '''    final topActions = <_SheetAction>[
+              _SheetAction(Icons.ios_share_outlined, l10n.shareCommand),
+              _SheetAction(Icons.delete_outline, l10n.deleteCommand),
+              if (widget.item.isFile)
+                _SheetAction(Icons.download_outlined, l10n.download),
+            ];
+            final bottomActions = <_SheetAction>[
+              _SheetAction(Icons.edit_outlined, l10n.rename),
+              _SheetAction(Icons.copy_outlined, l10n.copyCommand),
+              _SheetAction(Icons.drive_file_move_outline, l10n.moveCommand),
+              if (widget.item.isFile)
+                _SheetAction(Icons.comment_outlined, l10n.comments),
+              _SheetAction(Icons.info_outline, l10n.details),
+            ];
+          '''.replace('          ', '')
+          new_actions = '''    final availableActions = widget.item.availableActions;
+            final topActions = <_SheetAction>[
+              if (availableActions.contains(DriveItemAction.share))
+                _SheetAction(Icons.ios_share_outlined, l10n.shareCommand),
+              if (availableActions.contains(DriveItemAction.delete))
+                _SheetAction(Icons.delete_outline, l10n.deleteCommand),
+              if (availableActions.contains(DriveItemAction.download))
+                _SheetAction(Icons.download_outlined, l10n.download),
+            ];
+            final bottomActions = <_SheetAction>[
+              if (availableActions.contains(DriveItemAction.rename))
+                _SheetAction(Icons.edit_outlined, l10n.rename),
+              if (availableActions.contains(DriveItemAction.copy))
+                _SheetAction(Icons.copy_outlined, l10n.copyCommand),
+              if (availableActions.contains(DriveItemAction.move))
+                _SheetAction(Icons.drive_file_move_outline, l10n.moveCommand),
+              if (availableActions.contains(DriveItemAction.comments))
+                _SheetAction(Icons.comment_outlined, l10n.comments),
+              if (availableActions.contains(DriveItemAction.details))
+                _SheetAction(Icons.info_outline, l10n.details),
+            ];
+          '''.replace('          ', '')
+          assert text.count(old_actions) == 1
+          text = text.replace(old_actions, new_actions)
+
+          old_offline = '''            const SizedBox(height: 16),
+            _buildOfflineAction(l10n.makeAvailableOffline),
+            for (final action in bottomActions) _buildBottomAction(action),
+          '''.replace('          ', '')
+          new_offline = '''            const SizedBox(height: 16),
+            if (availableActions.contains(DriveItemAction.makeAvailableOffline))
+              _buildOfflineAction(l10n.makeAvailableOffline),
+            for (final action in bottomActions) _buildBottomAction(action),
+          '''.replace('          ', '')
           assert text.count(old_offline) == 1
           text = text.replace(old_offline, new_offline)
 
-          old_bottom = '''  Widget _buildBottomAction(_SheetAction action) {
-            return SizedBox(
-              height: _bottomActionHeight,
-              child: InkWell(
-                onTap: () => Navigator.of(context).pop(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Icon(
-                        action.icon,
-                        size: _actionIconSize,
-                        color: AppColors.neutralForeground1,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          action.label,
-                          style: AppTypography.myFilesPopupItem,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-          '''
-          new_bottom = '''  Widget _buildBottomAction(_SheetAction action) {
-            return InkWell(
-              onTap: () => Navigator.of(context).pop(),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Row(
-                  children: [
-                    Icon(
-                      action.icon,
-                      size: _actionIconSize,
-                      color: AppColors.neutralForeground1,
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        action.label,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.myFilesPopupItem.copyWith(fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-          '''
-          assert text.count(old_bottom) == 1
-          text = text.replace(old_bottom, new_bottom)
+          screen.write_text(text)
 
-          path.write_text(text)
+          tests = Path('test/my_files_screen_test.dart')
+          text = tests.read_text()
+          old_test = '''  testWidgets('folder action sheet omits file-only actions', (tester) async {
+            final folder = mockDriveItems.singleWhere((item) => item.id == 'folder-1c');
+            await pumpMyFiles(tester, items: <DriveItem>[folder]);
+
+            await tester.tap(find.byKey(const Key('myFilesMore-folder-1c')));
+            await tester.pumpAndSettle();
+
+            expect(find.text(folder.name), findsWidgets);
+            expect(find.text('Share'), findsOneWidget);
+            expect(find.text('Delete'), findsOneWidget);
+            expect(find.text('Make available offline'), findsOneWidget);
+            expect(find.text('Rename'), findsOneWidget);
+            expect(find.text('Copy'), findsOneWidget);
+            expect(find.text('Move'), findsOneWidget);
+            expect(find.text('Details'), findsOneWidget);
+            expect(find.text('Download'), findsNothing);
+            expect(find.text('Comments'), findsNothing);
+          });
+          '''.replace('          ', '')
+          new_test = '''  testWidgets('action sheet follows explicit operation capabilities', (
+            tester,
+          ) async {
+            const folder = DriveItem(
+              id: 'capability-folder',
+              name: 'Capability folder',
+              kind: DriveItemKind.folder,
+              modified: DriveItemModifiedTime.oneHourAgo,
+              modifiedSortValue: 1,
+              itemCount: 1,
+              availableActions: <DriveItemAction>[
+                DriveItemAction.share,
+                DriveItemAction.details,
+              ],
+            );
+            await pumpMyFiles(tester, items: const <DriveItem>[folder]);
+
+            await tester.tap(
+              find.byKey(const Key('myFilesMore-capability-folder')),
+            );
+            await tester.pumpAndSettle();
+
+            expect(find.text(folder.name), findsWidgets);
+            expect(find.text('Share'), findsOneWidget);
+            expect(find.text('Details'), findsOneWidget);
+            expect(find.text('Delete'), findsNothing);
+            expect(find.text('Download'), findsNothing);
+            expect(find.text('Make available offline'), findsNothing);
+            expect(find.text('Rename'), findsNothing);
+            expect(find.text('Copy'), findsNothing);
+            expect(find.text('Move'), findsNothing);
+            expect(find.text('Comments'), findsNothing);
+          });
+          '''.replace('          ', '')
+          assert text.count(old_test) == 1
+          text = text.replace(old_test, new_test)
+          tests.write_text(text)
           PY
+
+      - name: Format and validate
+        run: |
+          dart format lib/features/my_files/domain/drive_item.dart \
+            lib/features/my_files/data/mock_drive_items.dart \
+            lib/features/my_files/presentation/my_files_screen.dart \
+            test/my_files_screen_test.dart
+          flutter pub get
+          flutter gen-l10n
+          flutter test test/my_files_screen_test.dart
+          flutter test
+          flutter analyze
+          flutter build apk --debug
 
       - name: Remove one-shot workflow
         run: rm .github/workflows/patch-my-files-action-sheet.yml
@@ -166,5 +391,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git diff --cached --check
-          git commit -m "Match OneDrive secondary action rows"
+          git commit -m "Drive My Files actions from explicit capabilities"
           git push
