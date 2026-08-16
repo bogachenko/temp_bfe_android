@@ -413,7 +413,7 @@ class _BrowserHeader extends StatelessWidget {
               children: [
                 _SortPopup(sort: sort, onChanged: onSortChanged),
                 const SizedBox(width: AppSpacing.sm),
-                _ViewPopup(viewMode: _viewMode, onChanged: onViewModeChanged),
+                _ViewPopup(viewMode: viewMode, onChanged: onViewModeChanged),
               ],
             ),
           ),
