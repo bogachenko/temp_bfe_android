@@ -113,6 +113,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('myFilesActionSheet')), findsOneWidget);
+    expect(find.byKey(const Key('myFilesActionSheetHandle')), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const Key('myFilesActionSheetHandle'))),
+      const Size(36, 4),
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('myFilesActionSheetPreview'))).height,
+      72,
+    );
     expect(find.byKey(const Key('myFilesActionSheetName')), findsOneWidget);
     expect(find.byKey(const Key('myFilesActionSheetMetadata')), findsOneWidget);
     expect(

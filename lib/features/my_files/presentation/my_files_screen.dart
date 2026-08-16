@@ -169,6 +169,7 @@ class _MyFilesScreenState extends State<MyFilesScreen> {
       context: context,
       useSafeArea: true,
       isScrollControlled: true,
+      showDragHandle: false,
       backgroundColor: AppColors.neutralBackground1,
       barrierColor: AppColors.dialogScrim,
       elevation: 7,
@@ -1117,6 +1118,7 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
             Padding(
               padding: const EdgeInsets.only(top: 12, bottom: 24),
               child: Container(
+                key: const Key('myFilesActionSheetHandle'),
                 width: _handleWidth,
                 height: _handleHeight,
                 decoration: BoxDecoration(
@@ -1126,9 +1128,19 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
               ),
             ),
             SizedBox(
+              key: const Key('myFilesActionSheetPreview'),
               height: _previewSize,
               child: Center(
-                child: DriveItemIcon(item: widget.item, size: _previewSize),
+                child: widget.item.isFolder
+                    ? SizedBox(
+                        width: 84,
+                        height: 72,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: DriveItemIcon(item: widget.item, size: 84),
+                        ),
+                      )
+                    : DriveItemIcon(item: widget.item, size: _previewSize),
               ),
             ),
             const SizedBox(height: 8),
