@@ -99,7 +99,9 @@ void main() {
     expect(find.text('Сканировать'), findsOneWidget);
   });
 
-  testWidgets('PDF more button opens file actions', (tester) async {
+  testWidgets('PDF more button opens OneDrive file action sheet', (
+    tester,
+  ) async {
     final pdf = mockDriveItems.singleWhere(
       (item) => item.id == 'quarterly-report',
     );
@@ -110,10 +112,40 @@ void main() {
     await tester.tap(more);
     await tester.pumpAndSettle();
 
+    expect(find.byKey(const Key('myFilesActionSheet')), findsOneWidget);
+    expect(find.byKey(const Key('myFilesActionSheetName')), findsOneWidget);
+    expect(find.byKey(const Key('myFilesActionSheetMetadata')), findsOneWidget);
+    expect(find.byKey(const Key('myFilesActionSheetTopActions')), findsOneWidget);
+    expect(find.byKey(const Key('myFilesActionSheetOffline')), findsOneWidget);
     expect(find.text('Quarterly report.pdf'), findsWidgets);
     expect(find.text('Share'), findsOneWidget);
+    expect(find.text('Delete'), findsOneWidget);
     expect(find.text('Download'), findsOneWidget);
+    expect(find.text('Make available offline'), findsOneWidget);
     expect(find.text('Rename'), findsOneWidget);
+    expect(find.text('Copy'), findsOneWidget);
+    expect(find.text('Move'), findsOneWidget);
+    expect(find.text('Comments'), findsOneWidget);
+    expect(find.text('Details'), findsOneWidget);
+  });
+
+  testWidgets('folder action sheet omits file-only actions', (tester) async {
+    final folder = mockDriveItems.singleWhere((item) => item.id == 'folder-1c');
+    await pumpMyFiles(tester, items: <DriveItem>[folder]);
+
+    await tester.tap(find.byKey(const Key('myFilesMore-folder-1c')));
+    await tester.pumpAndSettle();
+
+    expect(find.text(folder.name), findsWidgets);
+    expect(find.text('Share'), findsOneWidget);
+    expect(find.text('Delete'), findsOneWidget);
+    expect(find.text('Make available offline'), findsOneWidget);
+    expect(find.text('Rename'), findsOneWidget);
+    expect(find.text('Copy'), findsOneWidget);
+    expect(find.text('Move'), findsOneWidget);
+    expect(find.text('Details'), findsOneWidget);
+    expect(find.text('Download'), findsNothing);
+    expect(find.text('Comments'), findsNothing);
   });
 
   testWidgets('file actions do not overflow on compact Android height', (
