@@ -41,5 +41,6 @@ abstract final class AppColors {
   static const Color fileWord = Color(0xFF185ABD);
   static const Color fileExcel = Color(0xFF107C41);
 
+  static const Color drawerScrim = Color(0x99000000);
   static const Color transparent = Color(0x00000000);
 }
