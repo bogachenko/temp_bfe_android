@@ -140,6 +140,24 @@ void main() {
     expect(tester.widget<Text>(find.text('Rename')).style?.fontSize, 16);
   });
 
+  testWidgets('Details action opens My Files details screen', (tester) async {
+    final pdf = mockDriveItems.singleWhere(
+      (item) => item.id == 'quarterly-report',
+    );
+    await pumpMyFiles(tester, items: <DriveItem>[pdf]);
+
+    await tester.tap(find.byKey(const Key('myFilesMore-quarterly-report')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Details'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('myFilesActionSheet')), findsNothing);
+    expect(find.byKey(const Key('myFilesDetailsScreen')), findsOneWidget);
+    expect(find.byKey(const Key('myFilesDetailsName')), findsOneWidget);
+    expect(find.text('Quarterly report.pdf'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('action sheet follows explicit operation capabilities', (
     tester,
   ) async {

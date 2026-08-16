@@ -1074,15 +1074,35 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
     ];
     final bottomActions = <_SheetAction>[
       if (availableActions.contains(DriveItemAction.rename))
-        _SheetAction(Icons.edit_outlined, l10n.rename),
+        _SheetAction(
+          Icons.edit_outlined,
+          l10n.rename,
+          action: DriveItemAction.rename,
+        ),
       if (availableActions.contains(DriveItemAction.copy))
-        _SheetAction(Icons.copy_outlined, l10n.copyCommand),
+        _SheetAction(
+          Icons.copy_outlined,
+          l10n.copyCommand,
+          action: DriveItemAction.copy,
+        ),
       if (availableActions.contains(DriveItemAction.move))
-        _SheetAction(Icons.drive_file_move_outline, l10n.moveCommand),
+        _SheetAction(
+          Icons.drive_file_move_outline,
+          l10n.moveCommand,
+          action: DriveItemAction.move,
+        ),
       if (availableActions.contains(DriveItemAction.comments))
-        _SheetAction(Icons.comment_outlined, l10n.comments),
+        _SheetAction(
+          Icons.comment_outlined,
+          l10n.comments,
+          action: DriveItemAction.comments,
+        ),
       if (availableActions.contains(DriveItemAction.details))
-        _SheetAction(Icons.info_outline, l10n.details),
+        _SheetAction(
+          Icons.info_outline,
+          l10n.details,
+          action: DriveItemAction.details,
+        ),
     ];
 
     return Padding(
@@ -1252,7 +1272,21 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
 
   Widget _buildBottomAction(_SheetAction action) {
     return InkWell(
-      onTap: () => Navigator.of(context).pop(),
+      onTap: () async {
+        final navigator = Navigator.of(context);
+        navigator.pop();
+        if (action.action == DriveItemAction.details) {
+          await navigator.push(
+            MaterialPageRoute<void>(
+              builder: (_) => _MyFilesDetailsScreen(
+                item: widget.item,
+                title: widget.title,
+                metadata: widget.metadata,
+              ),
+            ),
+          );
+        }
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -1279,8 +1313,56 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
 }
 
 class _SheetAction {
-  const _SheetAction(this.icon, this.label);
+  const _SheetAction(this.icon, this.label, {this.action});
 
   final IconData icon;
   final String label;
+  final DriveItemAction? action;
+}
+
+class _MyFilesDetailsScreen extends StatelessWidget {
+  const _MyFilesDetailsScreen({
+    required this.item,
+    required this.title,
+    required this.metadata,
+  });
+
+  final DriveItem item;
+  final String title;
+  final String metadata;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Scaffold(
+      key: const Key('myFilesDetailsScreen'),
+      appBar: AppBar(title: Text(l10n.details)),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(child: DriveItemIcon(item: item, size: 96)),
+              const SizedBox(height: 24),
+              Text(
+                title,
+                key: const Key('myFilesDetailsName'),
+                textAlign: TextAlign.center,
+                style: AppTypography.detailsFileName,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                metadata,
+                key: const Key('myFilesDetailsMetadata'),
+                textAlign: TextAlign.center,
+                style: AppTypography.myFilesRowMetadata,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
