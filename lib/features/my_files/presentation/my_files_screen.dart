@@ -169,7 +169,9 @@ class _MyFilesScreenState extends State<MyFilesScreen> {
       context: context,
       useSafeArea: true,
       isScrollControlled: true,
-      backgroundColor: AppColors.neutralBackground1,
+      backgroundColor: AppColors.neutralBackground2,
+      barrierColor: AppColors.dialogScrim,
+      elevation: 7,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppRadius.myFilesBottomSheet),
