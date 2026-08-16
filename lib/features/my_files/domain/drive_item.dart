@@ -19,6 +19,18 @@ enum DriveItemModifiedTime {
   oneWeekAgo,
 }
 
+enum DriveItemAction {
+  share,
+  delete,
+  download,
+  makeAvailableOffline,
+  rename,
+  copy,
+  move,
+  comments,
+  details,
+}
+
 class DriveItem {
   const DriveItem({
     required this.id,
@@ -26,6 +38,7 @@ class DriveItem {
     required this.kind,
     required this.modified,
     required this.modifiedSortValue,
+    this.availableActions = const <DriveItemAction>[],
     this.sizeBytes,
     this.itemCount,
     this.isShared = false,
@@ -36,6 +49,7 @@ class DriveItem {
   final DriveItemKind kind;
   final DriveItemModifiedTime modified;
   final int modifiedSortValue;
+  final List<DriveItemAction> availableActions;
   final int? sizeBytes;
   final int? itemCount;
   final bool isShared;
@@ -43,4 +57,5 @@ class DriveItem {
   bool get isFolder => kind == DriveItemKind.folder;
   bool get isPersonalVault => kind == DriveItemKind.personalVault;
   bool get isFile => !isFolder && !isPersonalVault;
+  bool get hasActions => availableActions.isNotEmpty;
 }
