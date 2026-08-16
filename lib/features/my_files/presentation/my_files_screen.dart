@@ -169,7 +169,7 @@ class _MyFilesScreenState extends State<MyFilesScreen> {
       context: context,
       useSafeArea: true,
       isScrollControlled: true,
-      backgroundColor: AppColors.neutralBackground2,
+      backgroundColor: AppColors.neutralBackground1,
       barrierColor: AppColors.dialogScrim,
       elevation: 7,
       shape: const RoundedRectangleBorder(
@@ -1156,45 +1156,52 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
   }
 
   Widget _buildTopAction(_SheetAction action) {
-    return InkWell(
-      onTap: () => Navigator.of(context).pop(),
-      child: Padding(
-        padding: const EdgeInsets.all(1),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 2),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Icon(
-                    action.icon,
-                    size: _actionIconSize,
-                    color: AppColors.neutralForeground1,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    action.label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: AppTypography.myFilesRowMetadata.copyWith(
-                      color: AppColors.neutralForeground1,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Material(
+        color: AppColors.neutralBackground2,
+        borderRadius: BorderRadius.circular(12),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => Navigator.of(context).pop(),
+          child: SizedBox.expand(
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Icon(
+                        action.icon,
+                        size: _actionIconSize,
+                        color: AppColors.neutralForeground1,
+                      ),
                     ),
                   ),
                 ),
-              ),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Text(
+                        action.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: AppTypography.myFilesRowMetadata.copyWith(
+                          color: AppColors.neutralForeground1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
