@@ -74,6 +74,13 @@
   "newFolder": "New folder",
   "uploadFiles": "Upload files",
   "scan": "Scan",
+  "openNavigationDrawer": "Open navigation menu",
+  "drawerSettings": "Settings",
+  "drawerHelpAndFeedback": "Help and feedback",
+  "drawerSignOut": "Sign out",
+  "drawerPrivacyAndCookies": "Privacy and cookies",
+  "signOutConfirmationTitle": "Sign out?",
+  "signOutConfirmationBodyPersonal": "Signing out will also remove all offline files.\nDo you want to continue?",
   "recycleBinTitle": "Recycle bin",
   "@recycleBinTitle": {
     "description": "Recycle bin screen title."
