@@ -117,6 +117,10 @@ void main() {
     expect(find.byKey(const Key('myFilesActionSheetMetadata')), findsOneWidget);
     expect(find.byKey(const Key('myFilesActionSheetTopActions')), findsOneWidget);
     expect(find.byKey(const Key('myFilesActionSheetOffline')), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const Key('myFilesActionSheetTopActions'))).height,
+      72,
+    );
     expect(find.text('Quarterly report.pdf'), findsWidgets);
     expect(find.text('Share'), findsOneWidget);
     expect(find.text('Delete'), findsOneWidget);
@@ -127,6 +131,8 @@ void main() {
     expect(find.text('Move'), findsOneWidget);
     expect(find.text('Comments'), findsOneWidget);
     expect(find.text('Details'), findsOneWidget);
+    expect(tester.widget<Text>(find.text('Share')).style?.fontSize, 12);
+    expect(tester.widget<Text>(find.text('Rename')).style?.fontSize, 16);
   });
 
   testWidgets('folder action sheet omits file-only actions', (tester) async {
