@@ -182,6 +182,7 @@ class _MyFilesScreenState extends State<MyFilesScreen> {
     await showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
+      isScrollControlled: true,
       backgroundColor: AppColors.neutralBackground1,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -412,7 +413,7 @@ class _BrowserHeader extends StatelessWidget {
               children: [
                 _SortPopup(sort: sort, onChanged: onSortChanged),
                 const SizedBox(width: AppSpacing.sm),
-                _ViewPopup(viewMode: viewMode, onChanged: onViewModeChanged),
+                _ViewPopup(viewMode: _viewMode, onChanged: onViewModeChanged),
               ],
             ),
           ),
