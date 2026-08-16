@@ -98,8 +98,7 @@ class _MyFilesScreenState extends State<MyFilesScreen> {
               if (_fabExpanded) const _CreateMenu(),
               _CreateFab(
                 expanded: _fabExpanded,
-                onPressed: () =>
-                    setState(() => _fabExpanded = !_fabExpanded),
+                onPressed: () => setState(() => _fabExpanded = !_fabExpanded),
               ),
             ],
           ),
@@ -163,7 +162,7 @@ class _MyFilesScreenState extends State<MyFilesScreen> {
   }
 
   Future<void> _showActions(DriveItem item) async {
-    if (item.isPersonalVault) return;
+    if (item.isPersonalVault || !item.hasActions) return;
     final l10n = AppLocalizations.of(context);
 
     await showModalBottomSheet<void>(
@@ -278,9 +277,7 @@ class _ModeChip extends StatelessWidget {
       height: AppSizes.myFilesModeSwitcherHeight,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       decoration: BoxDecoration(
-        color: selected
-            ? AppColors.neutralBackground1
-            : AppColors.transparent,
+        color: selected ? AppColors.neutralBackground1 : AppColors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.myFilesModeSwitcher),
       ),
       alignment: Alignment.center,
@@ -422,8 +419,8 @@ class _SortPopup extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final criterion = switch (sort) {
       MyFilesSort.nameAscending || MyFilesSort.nameDescending => l10n.sortName,
-      MyFilesSort.modifiedNewest || MyFilesSort.modifiedOldest =>
-        l10n.sortModified,
+      MyFilesSort.modifiedNewest ||
+      MyFilesSort.modifiedOldest => l10n.sortModified,
       MyFilesSort.sizeSmallest || MyFilesSort.sizeLargest => l10n.sortFileSize,
     };
     final arrowDown = switch (sort) {
@@ -549,7 +546,9 @@ class _ViewPopup extends StatelessWidget {
         ),
       ],
       child: _ControlPill(
-        label: viewMode == MyFilesViewMode.list ? l10n.viewList : l10n.viewIcons,
+        label: viewMode == MyFilesViewMode.list
+            ? l10n.viewList
+            : l10n.viewIcons,
         leading: Icon(
           viewMode == MyFilesViewMode.list
               ? Icons.view_list_outlined
@@ -642,7 +641,9 @@ class _ListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       key: const Key('myFilesList'),
-      padding: const EdgeInsets.only(bottom: AppSizes.myFilesBottomOverlayInset),
+      padding: const EdgeInsets.only(
+        bottom: AppSizes.myFilesBottomOverlayInset,
+      ),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
@@ -650,7 +651,9 @@ class _ListView extends StatelessWidget {
           item: item,
           displayName: displayName(item),
           metadata: metadata(item),
-          onMore: item.isPersonalVault ? null : () => onMore(item),
+          onMore: item.isPersonalVault || !item.hasActions
+              ? null
+              : () => onMore(item),
         );
       },
     );
@@ -684,10 +687,7 @@ class _ListRow extends StatelessWidget {
               child: Row(
                 children: [
                   const SizedBox(width: AppSpacing.sm),
-                  DriveItemIcon(
-                    item: item,
-                    size: AppSizes.myFilesItemIconSize,
-                  ),
+                  DriveItemIcon(item: item, size: AppSizes.myFilesItemIconSize),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Column(
@@ -766,9 +766,10 @@ class _IconGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final usableWidth = constraints.maxWidth - AppSpacing.xxl;
-        final calculated = ((usableWidth + AppSpacing.sm) /
-                (AppSizes.myFilesGridTileMinWidth + AppSpacing.sm))
-            .floor();
+        final calculated =
+            ((usableWidth + AppSpacing.sm) /
+                    (AppSizes.myFilesGridTileMinWidth + AppSpacing.sm))
+                .floor();
         final columns = math.max(
           AppSizes.myFilesGridMinColumns,
           math.min(AppSizes.myFilesGridMaxColumns, calculated),
@@ -795,7 +796,9 @@ class _IconGrid extends StatelessWidget {
               item: item,
               displayName: displayName(item),
               metadata: metadata(item),
-              onMore: item.isPersonalVault ? null : () => onMore(item),
+              onMore: item.isPersonalVault || !item.hasActions
+                  ? null
+                  : () => onMore(item),
             );
           },
         );
@@ -834,10 +837,7 @@ class _GridTile extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  DriveItemIcon(
-                    item: item,
-                    size: AppSizes.myFilesGridIconSize,
-                  ),
+                  DriveItemIcon(item: item, size: AppSizes.myFilesGridIconSize),
                   const Spacer(),
                   Text(
                     displayName,
@@ -1061,23 +1061,32 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final availableActions = widget.item.availableActions;
     final topActions = <_SheetAction>[
-      _SheetAction(Icons.ios_share_outlined, l10n.shareCommand),
-      _SheetAction(Icons.delete_outline, l10n.deleteCommand),
-      if (widget.item.isFile)
+      if (availableActions.contains(DriveItemAction.share))
+        _SheetAction(Icons.ios_share_outlined, l10n.shareCommand),
+      if (availableActions.contains(DriveItemAction.delete))
+        _SheetAction(Icons.delete_outline, l10n.deleteCommand),
+      if (availableActions.contains(DriveItemAction.download))
         _SheetAction(Icons.download_outlined, l10n.download),
     ];
     final bottomActions = <_SheetAction>[
-      _SheetAction(Icons.edit_outlined, l10n.rename),
-      _SheetAction(Icons.copy_outlined, l10n.copyCommand),
-      _SheetAction(Icons.drive_file_move_outline, l10n.moveCommand),
-      if (widget.item.isFile)
+      if (availableActions.contains(DriveItemAction.rename))
+        _SheetAction(Icons.edit_outlined, l10n.rename),
+      if (availableActions.contains(DriveItemAction.copy))
+        _SheetAction(Icons.copy_outlined, l10n.copyCommand),
+      if (availableActions.contains(DriveItemAction.move))
+        _SheetAction(Icons.drive_file_move_outline, l10n.moveCommand),
+      if (availableActions.contains(DriveItemAction.comments))
         _SheetAction(Icons.comment_outlined, l10n.comments),
-      _SheetAction(Icons.info_outline, l10n.details),
+      if (availableActions.contains(DriveItemAction.details))
+        _SheetAction(Icons.info_outline, l10n.details),
     ];
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewPaddingOf(context).bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewPaddingOf(context).bottom,
+      ),
       child: SingleChildScrollView(
         child: Column(
           key: const Key('myFilesActionSheet'),
@@ -1135,7 +1144,8 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
               ),
             ),
             const SizedBox(height: 16),
-            _buildOfflineAction(l10n.makeAvailableOffline),
+            if (availableActions.contains(DriveItemAction.makeAvailableOffline))
+              _buildOfflineAction(l10n.makeAvailableOffline),
             for (final action in bottomActions) _buildBottomAction(action),
           ],
         ),
@@ -1196,10 +1206,7 @@ class _ItemActionsSheetState extends State<_ItemActionsSheet> {
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
                   const Icon(

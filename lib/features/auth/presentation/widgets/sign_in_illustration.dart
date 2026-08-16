@@ -121,27 +121,15 @@ class _SignInIllustrationPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     canvas.drawOval(
-      Rect.fromCenter(
-        center: const Offset(275.46, 184),
-        width: 56,
-        height: 36,
-      ),
+      Rect.fromCenter(center: const Offset(275.46, 184), width: 56, height: 36),
       shadowPaint,
     );
     canvas.drawOval(
-      Rect.fromCenter(
-        center: const Offset(171.15, 281),
-        width: 36,
-        height: 22,
-      ),
+      Rect.fromCenter(center: const Offset(171.15, 281), width: 36, height: 22),
       shadowPaint,
     );
     canvas.drawOval(
-      Rect.fromCenter(
-        center: const Offset(416.9, 270),
-        width: 36,
-        height: 22,
-      ),
+      Rect.fromCenter(center: const Offset(416.9, 270), width: 36, height: 22),
       shadowPaint,
     );
 

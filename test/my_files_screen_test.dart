@@ -115,10 +115,15 @@ void main() {
     expect(find.byKey(const Key('myFilesActionSheet')), findsOneWidget);
     expect(find.byKey(const Key('myFilesActionSheetName')), findsOneWidget);
     expect(find.byKey(const Key('myFilesActionSheetMetadata')), findsOneWidget);
-    expect(find.byKey(const Key('myFilesActionSheetTopActions')), findsOneWidget);
+    expect(
+      find.byKey(const Key('myFilesActionSheetTopActions')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('myFilesActionSheetOffline')), findsOneWidget);
     expect(
-      tester.getSize(find.byKey(const Key('myFilesActionSheetTopActions'))).height,
+      tester
+          .getSize(find.byKey(const Key('myFilesActionSheetTopActions')))
+          .height,
       72,
     );
     expect(find.text('Quarterly report.pdf'), findsWidgets);
@@ -135,22 +140,35 @@ void main() {
     expect(tester.widget<Text>(find.text('Rename')).style?.fontSize, 16);
   });
 
-  testWidgets('folder action sheet omits file-only actions', (tester) async {
-    final folder = mockDriveItems.singleWhere((item) => item.id == 'folder-1c');
-    await pumpMyFiles(tester, items: <DriveItem>[folder]);
+  testWidgets('action sheet follows explicit operation capabilities', (
+    tester,
+  ) async {
+    const folder = DriveItem(
+      id: 'capability-folder',
+      name: 'Capability folder',
+      kind: DriveItemKind.folder,
+      modified: DriveItemModifiedTime.oneHourAgo,
+      modifiedSortValue: 1,
+      itemCount: 1,
+      availableActions: <DriveItemAction>[
+        DriveItemAction.share,
+        DriveItemAction.details,
+      ],
+    );
+    await pumpMyFiles(tester, items: const <DriveItem>[folder]);
 
-    await tester.tap(find.byKey(const Key('myFilesMore-folder-1c')));
+    await tester.tap(find.byKey(const Key('myFilesMore-capability-folder')));
     await tester.pumpAndSettle();
 
     expect(find.text(folder.name), findsWidgets);
     expect(find.text('Share'), findsOneWidget);
-    expect(find.text('Delete'), findsOneWidget);
-    expect(find.text('Make available offline'), findsOneWidget);
-    expect(find.text('Rename'), findsOneWidget);
-    expect(find.text('Copy'), findsOneWidget);
-    expect(find.text('Move'), findsOneWidget);
     expect(find.text('Details'), findsOneWidget);
+    expect(find.text('Delete'), findsNothing);
     expect(find.text('Download'), findsNothing);
+    expect(find.text('Make available offline'), findsNothing);
+    expect(find.text('Rename'), findsNothing);
+    expect(find.text('Copy'), findsNothing);
+    expect(find.text('Move'), findsNothing);
     expect(find.text('Comments'), findsNothing);
   });
 

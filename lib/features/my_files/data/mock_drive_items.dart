@@ -1,5 +1,30 @@
 import '../domain/drive_item.dart';
 
+// Explicit mock capability fixture for an ordinary owned folder.
+// Production must supply operation availability from actual item state.
+const mockOwnedFolderActions = <DriveItemAction>[
+  DriveItemAction.share,
+  DriveItemAction.delete,
+  DriveItemAction.makeAvailableOffline,
+  DriveItemAction.rename,
+  DriveItemAction.copy,
+  DriveItemAction.move,
+  DriveItemAction.details,
+];
+
+// Exact membership/order observed in the OneDrive file reference.
+const mockReferenceFileActions = <DriveItemAction>[
+  DriveItemAction.share,
+  DriveItemAction.delete,
+  DriveItemAction.download,
+  DriveItemAction.makeAvailableOffline,
+  DriveItemAction.rename,
+  DriveItemAction.copy,
+  DriveItemAction.move,
+  DriveItemAction.comments,
+  DriveItemAction.details,
+];
+
 const mockDriveItems = <DriveItem>[
   DriveItem(
     id: 'folder-1c',
@@ -8,6 +33,7 @@ const mockDriveItems = <DriveItem>[
     modified: DriveItemModifiedTime.oneHourAgo,
     modifiedSortValue: 5,
     itemCount: 18,
+    availableActions: mockOwnedFolderActions,
   ),
   DriveItem(
     id: 'folder-chalkboards',
@@ -17,6 +43,7 @@ const mockDriveItems = <DriveItem>[
     modifiedSortValue: 4,
     itemCount: 7,
     isShared: true,
+    availableActions: mockOwnedFolderActions,
   ),
   DriveItem(
     id: 'folder-documents',
@@ -25,6 +52,7 @@ const mockDriveItems = <DriveItem>[
     modified: DriveItemModifiedTime.yesterday,
     modifiedSortValue: 3,
     itemCount: 24,
+    availableActions: mockOwnedFolderActions,
   ),
   DriveItem(
     id: 'folder-desktop',
@@ -33,6 +61,7 @@ const mockDriveItems = <DriveItem>[
     modified: DriveItemModifiedTime.threeDaysAgo,
     modifiedSortValue: 2,
     itemCount: 11,
+    availableActions: mockOwnedFolderActions,
   ),
   DriveItem(
     id: 'personal-vault',
@@ -49,6 +78,7 @@ const mockDriveItems = <DriveItem>[
     modifiedSortValue: 5,
     sizeBytes: 2400000,
     isShared: true,
+    availableActions: mockReferenceFileActions,
   ),
   DriveItem(
     id: 'budget-2026',
@@ -57,6 +87,7 @@ const mockDriveItems = <DriveItem>[
     modified: DriveItemModifiedTime.twoHoursAgo,
     modifiedSortValue: 4,
     sizeBytes: 784000,
+    availableActions: mockReferenceFileActions,
   ),
   DriveItem(
     id: 'project-brief',
@@ -65,6 +96,7 @@ const mockDriveItems = <DriveItem>[
     modified: DriveItemModifiedTime.yesterday,
     modifiedSortValue: 3,
     sizeBytes: 138000,
+    availableActions: mockReferenceFileActions,
   ),
   DriveItem(
     id: 'pitch-deck',
@@ -73,6 +105,7 @@ const mockDriveItems = <DriveItem>[
     modified: DriveItemModifiedTime.threeDaysAgo,
     modifiedSortValue: 2,
     sizeBytes: 5100000,
+    availableActions: mockReferenceFileActions,
   ),
   DriveItem(
     id: 'plant-sample',
@@ -81,6 +114,7 @@ const mockDriveItems = <DriveItem>[
     modified: DriveItemModifiedTime.threeDaysAgo,
     modifiedSortValue: 2,
     sizeBytes: 3600000,
+    availableActions: mockReferenceFileActions,
   ),
   DriveItem(
     id: 'notes',
@@ -89,6 +123,7 @@ const mockDriveItems = <DriveItem>[
     modified: DriveItemModifiedTime.oneWeekAgo,
     modifiedSortValue: 1,
     sizeBytes: 18000,
+    availableActions: mockReferenceFileActions,
   ),
   DriveItem(
     id: 'demo-video',
@@ -97,5 +132,6 @@ const mockDriveItems = <DriveItem>[
     modified: DriveItemModifiedTime.oneWeekAgo,
     modifiedSortValue: 1,
     sizeBytes: 28400000,
+    availableActions: mockReferenceFileActions,
   ),
 ];
