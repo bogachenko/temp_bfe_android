@@ -1,0 +1,238 @@
+name: Apply My Files capability contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-my-files-capabilities.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          channel: stable
+
+      - name: Apply source-grounded My Files action contract
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          domain = Path('lib/features/my_files/domain/drive_item.dart')
+          text = domain.read_text()
+          marker = '''enum DriveItemModifiedTime {
+            oneHourAgo,
+            twoHoursAgo,
+            yesterday,
+            threeDaysAgo,
+            oneWeekAgo,
+          }
+          '''.replace('          ', '')
+          action_enum = '''
+          enum DriveItemAction {
+            share,
+            delete,
+            download,
+            makeAvailableOffline,
+            rename,
+            copy,
+            move,
+            comments,
+            details,
+          }
+          '''.replace('          ', '')
+          assert text.count(marker) == 1
+          text = text.replace(marker, marker + action_enum)
+          text = text.replace(
+            '    this.sizeBytes,',
+            '    this.availableActions = const <DriveItemAction>[],\n    this.sizeBytes,',
+          )
+          text = text.replace(
+            '  final int modifiedSortValue;\n',
+            '  final int modifiedSortValue;\n  final List<DriveItemAction> availableActions;\n',
+          )
+          text = text.replace(
+            '  bool get isFile => !isFolder && !isPersonalVault;\n',
+            '  bool get isFile => !isFolder && !isPersonalVault;\n'
+            '  bool get hasActions => availableActions.isNotEmpty;\n',
+          )
+          domain.write_text(text)
+
+          mock = Path('lib/features/my_files/data/mock_drive_items.dart')
+          text = mock.read_text()
+          fixtures = '''
+          // Explicit mock capability fixture for an ordinary owned folder.
+          // Production must supply operation availability from actual item state.
+          const mockOwnedFolderActions = <DriveItemAction>[
+            DriveItemAction.share,
+            DriveItemAction.delete,
+            DriveItemAction.makeAvailableOffline,
+            DriveItemAction.rename,
+            DriveItemAction.copy,
+            DriveItemAction.move,
+            DriveItemAction.details,
+          ];
+
+          // Exact membership/order observed in the OneDrive file reference.
+          const mockReferenceFileActions = <DriveItemAction>[
+            DriveItemAction.share,
+            DriveItemAction.delete,
+            DriveItemAction.download,
+            DriveItemAction.makeAvailableOffline,
+            DriveItemAction.rename,
+            DriveItemAction.copy,
+            DriveItemAction.move,
+            DriveItemAction.comments,
+            DriveItemAction.details,
+          ];
+          '''.replace('          ', '')
+          text = text.replace("import '../domain/drive_item.dart';\n", "import '../domain/drive_item.dart';\n" + fixtures)
+
+          item_pattern = re.compile(r'  DriveItem\(\n(?P<body>.*?)\n  \),', re.S)
+          def add_fixture(match):
+            body = match.group('body')
+            if 'kind: DriveItemKind.personalVault' in body:
+              return match.group(0)
+            if 'availableActions:' in body:
+              return match.group(0)
+            fixture = 'mockOwnedFolderActions' if 'kind: DriveItemKind.folder' in body else 'mockReferenceFileActions'
+            return f'  DriveItem(\n{body}\n    availableActions: {fixture},\n  ),'
+          text = item_pattern.sub(add_fixture, text)
+          mock.write_text(text)
+
+          screen = Path('lib/features/my_files/presentation/my_files_screen.dart')
+          text = screen.read_text()
+          text = text.replace(
+            'if (item.isPersonalVault) return;',
+            'if (item.isPersonalVault || !item.hasActions) return;',
+          )
+          old_more = 'onMore: item.isPersonalVault ? null : () => onMore(item),'
+          assert text.count(old_more) == 2
+          text = text.replace(
+            old_more,
+            'onMore: item.isPersonalVault || !item.hasActions\n'
+            '    ? null\n'
+            '    : () => onMore(item),',
+          )
+          text = text.replace(
+            '    final topActions = <_SheetAction>[',
+            '    final availableActions = widget.item.availableActions;\n'
+            '    final topActions = <_SheetAction>[',
+          )
+          text = text.replace(
+            '      _SheetAction(Icons.ios_share_outlined, l10n.shareCommand),\n'
+            '      _SheetAction(Icons.delete_outline, l10n.deleteCommand),\n'
+            '      if (widget.item.isFile)\n'
+            '        _SheetAction(Icons.download_outlined, l10n.download),',
+            '      if (availableActions.contains(DriveItemAction.share))\n'
+            '        _SheetAction(Icons.ios_share_outlined, l10n.shareCommand),\n'
+            '      if (availableActions.contains(DriveItemAction.delete))\n'
+            '        _SheetAction(Icons.delete_outline, l10n.deleteCommand),\n'
+            '      if (availableActions.contains(DriveItemAction.download))\n'
+            '        _SheetAction(Icons.download_outlined, l10n.download),',
+          )
+          text = text.replace(
+            '      _SheetAction(Icons.edit_outlined, l10n.rename),\n'
+            '      _SheetAction(Icons.copy_outlined, l10n.copyCommand),\n'
+            '      _SheetAction(Icons.drive_file_move_outline, l10n.moveCommand),\n'
+            '      if (widget.item.isFile)\n'
+            '        _SheetAction(Icons.comment_outlined, l10n.comments),\n'
+            '      _SheetAction(Icons.info_outline, l10n.details),',
+            '      if (availableActions.contains(DriveItemAction.rename))\n'
+            '        _SheetAction(Icons.edit_outlined, l10n.rename),\n'
+            '      if (availableActions.contains(DriveItemAction.copy))\n'
+            '        _SheetAction(Icons.copy_outlined, l10n.copyCommand),\n'
+            '      if (availableActions.contains(DriveItemAction.move))\n'
+            '        _SheetAction(Icons.drive_file_move_outline, l10n.moveCommand),\n'
+            '      if (availableActions.contains(DriveItemAction.comments))\n'
+            '        _SheetAction(Icons.comment_outlined, l10n.comments),\n'
+            '      if (availableActions.contains(DriveItemAction.details))\n'
+            '        _SheetAction(Icons.info_outline, l10n.details),',
+          )
+          text = text.replace(
+            '            _buildOfflineAction(l10n.makeAvailableOffline),',
+            '            if (availableActions.contains(DriveItemAction.makeAvailableOffline))\n'
+            '              _buildOfflineAction(l10n.makeAvailableOffline),',
+          )
+          screen.write_text(text)
+
+          tests = Path('test/my_files_screen_test.dart')
+          text = tests.read_text()
+          pattern = re.compile(
+            r"  testWidgets\('folder action sheet omits file-only actions', \(tester\) async \{.*?\n  \}\);\n\n(?=  testWidgets\('file actions do not overflow)",
+            re.S,
+          )
+          replacement = '''  testWidgets('action sheet follows explicit operation capabilities', (
+            tester,
+          ) async {
+            const folder = DriveItem(
+              id: 'capability-folder',
+              name: 'Capability folder',
+              kind: DriveItemKind.folder,
+              modified: DriveItemModifiedTime.oneHourAgo,
+              modifiedSortValue: 1,
+              itemCount: 1,
+              availableActions: <DriveItemAction>[
+                DriveItemAction.share,
+                DriveItemAction.details,
+              ],
+            );
+            await pumpMyFiles(tester, items: const <DriveItem>[folder]);
+
+            await tester.tap(
+              find.byKey(const Key('myFilesMore-capability-folder')),
+            );
+            await tester.pumpAndSettle();
+
+            expect(find.text(folder.name), findsWidgets);
+            expect(find.text('Share'), findsOneWidget);
+            expect(find.text('Details'), findsOneWidget);
+            expect(find.text('Delete'), findsNothing);
+            expect(find.text('Download'), findsNothing);
+            expect(find.text('Make available offline'), findsNothing);
+            expect(find.text('Rename'), findsNothing);
+            expect(find.text('Copy'), findsNothing);
+            expect(find.text('Move'), findsNothing);
+            expect(find.text('Comments'), findsNothing);
+          });
+
+          '''.replace('          ', '')
+          text, count = pattern.subn(replacement, text)
+          assert count == 1
+          tests.write_text(text)
+          PY
+
+      - name: Validate
+        run: |
+          flutter pub get
+          dart format lib/features/my_files/domain/drive_item.dart \
+            lib/features/my_files/data/mock_drive_items.dart \
+            lib/features/my_files/presentation/my_files_screen.dart \
+            test/my_files_screen_test.dart
+          flutter gen-l10n
+          flutter test test/my_files_screen_test.dart
+          flutter test
+          flutter analyze
+          flutter build apk --debug
+
+      - name: Commit validated patch
+        run: |
+          rm -f .github/workflows/patch-my-files-action-sheet.yml
+          rm -f .github/workflows/apply-my-files-capabilities.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Drive My Files actions from explicit capabilities"
+          git push
