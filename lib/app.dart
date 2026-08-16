@@ -127,22 +127,13 @@ class _DriveShellState extends State<_DriveShell> {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierColor: AppColors.dialogScrim,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(l10n.signOutConfirmationTitle),
-          content: Text(l10n.signOutConfirmationBodyPersonal),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: Text(l10n.cancel),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(
-                MaterialLocalizations.of(dialogContext).okButtonLabel,
-              ),
-            ),
-          ],
+        return _SignOutConfirmationDialog(
+          title: l10n.signOutConfirmationTitle,
+          message: l10n.signOutConfirmationBodyPersonal,
+          cancelLabel: l10n.cancel,
+          confirmLabel: MaterialLocalizations.of(dialogContext).okButtonLabel,
         );
       },
     );
@@ -150,6 +141,107 @@ class _DriveShellState extends State<_DriveShell> {
     if (confirmed == true && mounted) {
       widget.onSignOut();
     }
+  }
+}
+
+class _SignOutConfirmationDialog extends StatelessWidget {
+  const _SignOutConfirmationDialog({
+    required this.title,
+    required this.message,
+    required this.cancelLabel,
+    required this.confirmLabel,
+  });
+
+  final String title;
+  final String message;
+  final String cancelLabel;
+  final String confirmLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final actionStyle = TextButton.styleFrom(
+      minimumSize: const Size(
+        AppSizes.signOutDialogActionMinWidth,
+        AppSizes.signOutDialogActionHeight,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      textStyle: AppTypography.signOutDialogAction,
+      foregroundColor: AppColors.brandForeground1,
+    );
+
+    return Dialog(
+      key: const Key('signOutDialog'),
+      insetPadding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.signOutDialogHorizontalInset,
+      ),
+      backgroundColor: AppColors.neutralBackground1,
+      surfaceTintColor: AppColors.transparent,
+      elevation: 24,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.signOutDialog),
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: AppSizes.signOutDialogTopPadding,
+            bottom: AppSizes.signOutDialogBottomPadding,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.signOutDialogHorizontalPadding,
+                ),
+                child: Text(
+                  title,
+                  key: const Key('signOutDialogTitle'),
+                  style: AppTypography.signOutDialogTitle,
+                ),
+              ),
+              const SizedBox(height: AppSizes.signOutDialogTitleBodyGap),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.signOutDialogHorizontalPadding,
+                ),
+                child: Text(
+                  message,
+                  key: const Key('signOutDialogBody'),
+                  style: AppTypography.signOutDialogBody,
+                ),
+              ),
+              const SizedBox(height: AppSizes.signOutDialogBodyActionsGap),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(
+                  end: AppSizes.signOutDialogActionsRightPadding,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      key: const Key('signOutDialogCancel'),
+                      style: actionStyle,
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text(cancelLabel),
+                    ),
+                    const SizedBox(width: AppSizes.signOutDialogActionSpacing),
+                    TextButton(
+                      key: const Key('signOutDialogConfirm'),
+                      style: actionStyle,
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: Text(confirmLabel),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
