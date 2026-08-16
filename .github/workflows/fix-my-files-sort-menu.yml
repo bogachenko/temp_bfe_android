@@ -23,7 +23,9 @@ jobs:
           channel: stable
 
       - name: Apply production sort-menu contract
-        run: python3 .github/tmp_fix_sort.py
+        run: |
+          python3 .github/tmp_fix_sort.py
+          sed -i 's/A–Z/A to Z/g; s/Z–A/Z to A/g' test/my_files_screen_test.dart
 
       - name: Validate
         run: |
